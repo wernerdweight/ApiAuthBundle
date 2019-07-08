@@ -1,0 +1,56 @@
+{
+    "name": "wernerdweight/api-auth-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony bundle providing API authentication and authorization.",
+    "keywords": [
+        "api",
+        "authorization",
+        "authentication",
+        "bundle"
+    ],
+    "homepage": "https://github.com/wernerdweight/ApiAuthBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Werner Dweight Solutions",
+            "email": "info@wds.blue"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "symfony/framework-bundle": "^4.0",
+        "thecodingmachine/safe": "^0.1.13",
+        "wernerdweight/ra": "^0.3.3"
+    },
+    "require-dev": {
+        "wernerdweight/cs": "^1.2.1",
+        "thecodingmachine/phpstan-safe-rule": "^0.1.2",
+        "symfony/phpunit-bridge": "^4.3"
+    },
+    "suggest": {},
+    "autoload": {
+        "psr-4": {
+            "WernerDweight\\ApiAuthBundle\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WernerDweight\\ApiAuthBundle\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "fix": "ecs check ./src/ ./tests/ --config vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml --fix",
+        "phpstan": "phpstan analyse ./src/ ./tests/ --level max",
+        "phpmd": "phpmd ./src/ text vendor/wernerdweight/cs/WernerDweight/CS/phpmd.xml",
+        "ecs": "ecs check ./src/ ./tests/ --config vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml",
+        "ecs-fix": "ecs check ./src/ ./tests/ --config vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml --fix",
+        "phpunit": "phpunit",
+        "victor": "victor"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "^4.3"
+        }
+    }
+}
