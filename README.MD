@@ -54,6 +54,94 @@ If you can't modify the controller (e.g. it's vendor code), you can specify an i
 
 If you want to target all controllers, use `*` as configuration value for `target_controllers`.
 
+### Firewall
+
+Configure your firewall:
+
+```yaml
+# config/packages/security.yaml
+security:
+    # TODO: provider/user class (api client)
+    # ...
+    firewalls:
+        # ...
+        main:
+            # ...
+            guard:
+                authenticators:
+                    - WernerDweight\ApiAuthBundle\Security\ApiClientAuthenticator
+
+            # you should probably entirely disable anonymous access to the api
+            # anonymous: false
+            
+            # if you want, disable storing the client in the session
+            # stateless: true
+```
+
+### ApiClient
+
+Create an entity that implements ApiClientInterface:
+
+```php
+use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
+
+class ApiClient implements ApiClientInterface
+{
+    public function getClientId(): string
+    {
+        ...
+    }
+
+    public function getClientSecret(): string
+    {
+        ...
+    }
+
+    public function getClientScope(): array
+    {
+        ...
+    }
+}
+```
+
+### ApiUser
+
+**OPTIONAL:** If you want to restrict certain actions within your API to certain users, create an entity that implements ApiUserInterface and also create a UserProvider:
+
+```php
+use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
+
+class ApiUser implements ApiUserInterface
+{
+    public function setApiToken(string $apiToken): ApiUserInterface
+    {
+        ...
+    }
+    
+    public function getApiToken(): string
+    {
+        ...
+    }
+    
+    public function setApiTokenExpirationDate(\DateTime $apiTokenExpirationDate): ApiUserInterface
+    {
+        ...
+    }
+    
+    public function getApiTokenExpirationDate(): ?\DateTime
+    {
+        ...
+    }
+    
+    public function getUserScope(): array
+    {
+        ...
+    }
+}
+```
+
+TODO: provider
+
 Usage
 ------------
 

@@ -1,0 +1,6 @@
+wds_api_auth_authenticate:
+    path:     /authenticate/
+    methods:  [ OPTIONS, POST ]
+    controller: WernerDweight\ApiAuthBundle\Controller\AuthenticateController::index
+    defaults:
+        _format: json

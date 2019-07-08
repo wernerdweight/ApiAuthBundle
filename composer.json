@@ -20,7 +20,8 @@
         "php": ">=7.2.0",
         "symfony/framework-bundle": "^4.0",
         "thecodingmachine/safe": "^0.1.13",
-        "wernerdweight/ra": "^0.3.3"
+        "wernerdweight/ra": "^0.3.3",
+        "symfony/security-bundle": "^4.3"
     },
     "require-dev": {
         "wernerdweight/cs": "^1.2.1",
