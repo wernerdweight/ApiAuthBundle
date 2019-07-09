@@ -13,9 +13,9 @@ interface ApiUserInterface extends \JsonSerializable
     public function setApiToken(string $apiToken): self;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getApiToken(): string;
+    public function getApiToken(): ?string;
 
     /**
      * @param \DateTime $apiTokenExpirationDate

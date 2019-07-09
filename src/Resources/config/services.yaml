@@ -6,7 +6,7 @@ services:
 
     WernerDweight\ApiAuthBundle\:
         resource: '../../*'
-        exclude: '../../{DependencyInjection,Event,Exception}'
+        exclude: '../../{DependencyInjection,Enum,Event,Exception}'
 
     WernerDweight\ApiAuthBundle\Service\ConfigurationProvider:
         arguments:
