@@ -25,6 +25,18 @@ class ApiAuthExtension extends Extension
             'api_auth.target_controllers',
             $config['target_controllers'] ?? []
         );
+        $container->setParameter(
+            'api_auth.client.class',
+            $config['client']['class'] ?? null
+        );
+        $container->setParameter(
+            'api_auth.client.property',
+            $config['client']['property'] ?? null
+        );
+        $container->setParameter(
+            'api_auth.user.class',
+            $config['client']['class'] ?? null
+        );
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');

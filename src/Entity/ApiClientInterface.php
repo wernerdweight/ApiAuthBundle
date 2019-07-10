@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Entity;
 
-interface ApiClientInterface
+use Symfony\Component\Security\Core\User\UserInterface;
+
+interface ApiClientInterface extends UserInterface
 {
     /**
      * @return string

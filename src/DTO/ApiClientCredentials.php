@@ -13,6 +13,7 @@ class ApiClientCredentials
 
     /**
      * ApiClientCredentials constructor.
+     *
      * @param string $clientId
      * @param string $clientSecret
      */

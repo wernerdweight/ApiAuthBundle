@@ -34,12 +34,23 @@ Enable the bundle in your kernel:
 Configuration
 ------------
 
-None of the configuration keys are mandatory, default values are mentioned in comments. 
+Only client configuration is mandatory, default values are mentioned in comments. 
 
 ```yaml
 # config/packages/api_auth.yaml
 api_auth:
-    # list of controllers to target
+    # api client configuration (mandatory)
+    client:
+        class: App\Entity\ApiClient # your entity that implements ApiClientInterface
+        property: clientId          # property of the entity that is used as client id
+                                    # you may also make your ApiClientRepository extend UserLoaderInterface and ommit the property setting
+    
+    # api user configuration (optional)
+    # if you ommit user configuration, you will not be able to use `on-behalf` access mode (see below)
+    user:
+        class: App\Entity\User
+
+    # list of controllers to target (optional)
     target_controllers:         # default 'WernerDweight\ApiAuthBundle\Contrtoller\ApiAuthControllerInterface'
         - '*'                   # all controllers or list specific controllers (see next line)
         - 'My\Controller\SomeInterface'
@@ -61,7 +72,10 @@ Configure your firewall:
 ```yaml
 # config/packages/security.yaml
 security:
-    # TODO: provider/user class (api client)
+    providers:
+        wds_api_auth_provider:
+            id: WernerDweight\ApiAuthBundle\Security\ApiClientProvider
+    
     # ...
     firewalls:
         # ...
@@ -87,6 +101,15 @@ use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
 
 class ApiClient implements ApiClientInterface
 {
+    // this trait solves the extension of UserInterface
+    // (which is required by symfony authentication process, but not necessary for the ApiClient as such)
+    use ApiClientTrait;
+    
+    /**
+     * Please implement the following methods by yourself.
+     * You will need to store the data in some fields and ApiAuthBundle doesn't want to force you to use exact field names and mappings.
+     */
+
     public function getClientId(): string
     {
         ...
@@ -106,7 +129,7 @@ class ApiClient implements ApiClientInterface
 
 ### ApiUser
 
-**OPTIONAL:** If you want to restrict certain actions within your API to certain users, create an entity that implements ApiUserInterface and also create a UserProvider:
+**OPTIONAL:** If you want to restrict certain actions within your API to certain users ("on behalf" access mode), create an entity that implements ApiUserInterface and also create a UserProvider:
 
 ```php
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
@@ -145,7 +168,7 @@ TODO: provider
 Usage
 ------------
 
-TODO:
+TODO: on-behalf
 
 ### Events
 

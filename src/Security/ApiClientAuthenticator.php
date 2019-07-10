@@ -15,18 +15,22 @@ use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
 use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
+use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 
 final class ApiClientAuthenticator implements AuthenticatorInterface
 {
     /** @var string */
-    private const UNAUTHORIZED_MESSAGE = 'Client id and secret are required to authenticate!';
+    private const AUTHORIZATION_REQUIRED_MESSAGE = 'Client id and secret are required to authenticate!';
+    /** @var string */
+    private const UNAUTHORIZED_MESSAGE = 'Client id and/or secret are invalid!';
 
     /** @var Security */
     private $security;
 
     /**
      * ApiClientAuthenticator constructor.
+     *
      * @param Security $security
      */
     public function __construct(Security $security)
@@ -35,17 +39,19 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param Request $request
+     * @param Request                      $request
      * @param AuthenticationException|null $authException
+     *
      * @return JsonResponse
      */
     public function start(Request $request, ?AuthenticationException $authException = null): JsonResponse
     {
-        return new JsonResponse(['message' => self::UNAUTHORIZED_MESSAGE], Response::HTTP_UNAUTHORIZED);
+        return new JsonResponse(['message' => self::AUTHORIZATION_REQUIRED_MESSAGE], Response::HTTP_UNAUTHORIZED);
     }
 
     /**
      * @param Request $request
+     *
      * @return bool
      */
     public function supports(Request $request): bool
@@ -61,12 +67,13 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
         ) {
             return false;
         }
-        
+
         return true;
     }
 
     /**
      * @param Request $request
+     *
      * @return ApiClientCredentials
      */
     public function getCredentials(Request $request): ApiClientCredentials
@@ -79,49 +86,71 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param ApiClientCredentials $credentials
+     * @param mixed                 $credentials
      * @param UserProviderInterface $userProvider
-     * @return UserInterface|null
+     *
+     * @return ApiClientInterface
      */
-    public function getUser(ApiClientCredentials $credentials, UserProviderInterface $userProvider): ?UserInterface
+    public function getUser($credentials, UserProviderInterface $userProvider): UserInterface
     {
-        // TODO: use user provider (in order not to have to expect actual field names)
-        // TODO: Implement getUser() method.
+        return $userProvider->loadUserByUsername($credentials->getClientId());
     }
 
     /**
      * @param ApiClientCredentials $credentials
-     * @param UserInterface $user
+     * @param ApiClientInterface   $user
+     *
      * @return bool
      */
-    public function checkCredentials(ApiClientCredentials $credentials, UserInterface $user): bool
+    public function checkCredentials($credentials, UserInterface $user): bool
     {
-        // validation is implicit (no user will be found if id or secret doesn't match)
-        return true;
+        // TODO: check api client scope
+        // TODO: if on-behalf access mode is required:
+        //  - authenticate user (inject ApiUserProvider (load by api-user-token))
+        //  - check api user scope
+        return $user->getClientSecret() === $credentials->getClientSecret();
     }
 
     /**
-     * @param UserInterface $user
-     * @param string $providerKey
+     * @param ApiClientInterface $user
+     * @param string             $providerKey
+     *
      * @return GuardTokenInterface
      */
-    public function createAuthenticatedToken(UserInterface $user, string $providerKey): GuardTokenInterface
+    public function createAuthenticatedToken(UserInterface $user, $providerKey): GuardTokenInterface
     {
         return new PostAuthenticationGuardToken($user, $providerKey, $user->getRoles());
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    /**
+     * @param Request                 $request
+     * @param AuthenticationException $exception
+     *
+     * @return JsonResponse
+     */
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
-        // TODO: Implement onAuthenticationFailure() method.
+        return new JsonResponse(['message' => self::UNAUTHORIZED_MESSAGE], Response::HTTP_FORBIDDEN);
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    /**
+     * @param Request        $request
+     * @param TokenInterface $token
+     * @param string         $providerKey
+     *
+     * @return Response|null
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
-        // TODO: Implement onAuthenticationSuccess() method.
+        // all requests need to authenticate, continue processing of the request
+        return null;
     }
 
-    public function supportsRememberMe()
+    /**
+     * @return bool
+     */
+    public function supportsRememberMe(): bool
     {
-        // TODO: Implement supportsRememberMe() method.
+        return false;
     }
 }
