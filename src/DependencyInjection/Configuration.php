@@ -6,6 +6,7 @@ namespace WernerDweight\ApiAuthBundle\DependencyInjection;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\Checker\RouteChecker;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -39,6 +40,12 @@ final class Configuration implements ConfigurationInterface
                         ->scalarNode('property')
                             ->defaultNull()
                         ->end()
+                        ->booleanNode('use_scope_access_model')
+                            ->defaultFalse()
+                        ->end()
+                        ->scalarNode('access_scope_checker')
+                            ->defaultValue(RouteChecker::class)
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('user')
@@ -46,6 +53,12 @@ final class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('class')
                             ->defaultNull()
+                        ->end()
+                        ->booleanNode('use_scope_access_model')
+                            ->defaultFalse()
+                        ->end()
+                        ->scalarNode('access_scope_checker')
+                            ->defaultValue(RouteChecker::class)
                         ->end()
                     ->end()
                 ->end()

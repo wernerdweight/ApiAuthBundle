@@ -21,6 +21,7 @@
         "symfony/framework-bundle": "^4.0",
         "thecodingmachine/safe": "^0.1.13",
         "wernerdweight/ra": "^0.3.3",
+        "wernerdweight/enhanced-exception": "^1.0",
         "symfony/security-bundle": "^4.3"
     },
     "require-dev": {

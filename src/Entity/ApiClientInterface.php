@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace WernerDweight\ApiAuthBundle\Entity;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
 interface ApiClientInterface extends UserInterface
 {
@@ -20,5 +21,5 @@ interface ApiClientInterface extends UserInterface
     /**
      * @return array
      */
-    public function getClientScope(): array;
+    public function getClientScope(): AccessScope;
 }

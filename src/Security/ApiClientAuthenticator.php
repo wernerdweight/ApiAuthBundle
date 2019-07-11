@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +15,14 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
+use WernerDweight\ApiAuthBundle\Event\ApiClientCredentialsCheckedEvent;
+use WernerDweight\ApiAuthBundle\Exception\ApiClientAuthenticatorException;
+use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\AccessScopeCheckerFactory;
+use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 
 final class ApiClientAuthenticator implements AuthenticatorInterface
 {
@@ -28,14 +34,32 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     /** @var Security */
     private $security;
 
+    /** @var EventDispatcher */
+    private $eventDispatcher;
+
+    /** @var ConfigurationProvider */
+    private $configurationProvider;
+
+    /** @var AccessScopeCheckerFactory */
+    private $accessScopeCheckerFactory;
+
     /**
      * ApiClientAuthenticator constructor.
-     *
      * @param Security $security
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param ConfigurationProvider $configurationProvider
+     * @param AccessScopeCheckerFactory $accessScopeCheckerFactory
      */
-    public function __construct(Security $security)
-    {
+    public function __construct(
+        Security $security,
+        EventDispatcherInterface $eventDispatcher,
+        ConfigurationProvider $configurationProvider,
+        AccessScopeCheckerFactory $accessScopeCheckerFactory
+    ) {
         $this->security = $security;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->configurationProvider = $configurationProvider;
+        $this->accessScopeCheckerFactory = $accessScopeCheckerFactory;
     }
 
     /**
@@ -104,11 +128,42 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function checkCredentials($credentials, UserInterface $user): bool
     {
-        // TODO: check api client scope
-        // TODO: if on-behalf access mode is required:
-        //  - authenticate user (inject ApiUserProvider (load by api-user-token))
-        //  - check api user scope
-        return $user->getClientSecret() === $credentials->getClientSecret();
+        if ($user->getClientSecret() !== $credentials->getClientSecret()) {
+            return false;
+        }
+
+        // check api client scope
+        $scopeAccessibility = ApiAuthEnum::SCOPE_ACCESSIBILITY_ACCESSIBLE;
+        if (true === $this->configurationProvider->getClientUseScopeAccessModel()) {
+            $scopeAccessibility = $this->accessScopeCheckerFactory
+                ->get($this->configurationProvider->getClientAccessScopeChecker())
+                ->check($user->getClientScope());
+            if (ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN === $scopeAccessibility) {
+                return false;
+            }
+        }
+
+        /** @var ApiClientCredentialsCheckedEvent $event */
+        $event = $this->eventDispatcher->dispatch(new ApiClientCredentialsCheckedEvent($credentials, $user));
+        if (true !== $event->isValid()) {
+            return false;
+        }
+
+        if (ApiAuthEnum::SCOPE_ACCESSIBILITY_ON_BEHALF === $scopeAccessibility) {
+            if (null === $this->configurationProvider->getUserClass()) {
+                throw new ApiClientAuthenticatorException(ApiClientAuthenticatorException::EXCEPTION_NO_USER_CLASS);
+            }
+            // TODO: authenticate user (inject ApiUserProvider (load by api-user-token))
+
+            // TODO: check api user scope
+            if (true === $this->configurationProvider->getUserUseScopeAccessModel()) {
+
+            }
+
+            // TODO: set the user as current user (instead of client)
+        }
+
+        return true;
     }
 
     /**

@@ -12,6 +12,7 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
+use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 use WernerDweight\RA\RA;
 
 final class ApiClientProvider implements UserProviderInterface
@@ -29,30 +30,24 @@ final class ApiClientProvider implements UserProviderInterface
     private const EXCEPTION_UNABLE_TO_LOAD =
         '%s must implement "UserLoaderInterface", or the "property" key must be set for user provider.';
 
-    /** @var string */
-    private $apiClientClassName;
-
-    /** @var string|null */
-    private $property;
-
     /** @var EntityManager */
     private $entityManaager;
+
+    /** @var ConfigurationProvider */
+    private $configurationProvider;
 
     /**
      * ApiUserProvider constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param string                 $apiClientClassName
-     * @param string|null            $property
+     * @param ConfigurationProvider  $configurationProvider
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        string $apiClientClassName,
-        ?string $property = null
+        ConfigurationProvider $configurationProvider
     ) {
         $this->entityManaager = $entityManager;
-        $this->apiClientClassName = $apiClientClassName;
-        $this->property = $property;
+        $this->configurationProvider = $configurationProvider;
     }
 
     /**
@@ -60,7 +55,7 @@ final class ApiClientProvider implements UserProviderInterface
      */
     private function getRepository(): ObjectRepository
     {
-        return $this->entityManaager->getRepository($this->apiClientClassName);
+        return $this->entityManaager->getRepository($this->configurationProvider->getClientClass());
     }
 
     /**
@@ -73,9 +68,10 @@ final class ApiClientProvider implements UserProviderInterface
     public function loadUserByUsername($username): ApiClientInterface
     {
         $repository = $this->getRepository();
-        if (null !== $this->property) {
+        $property = $this->configurationProvider->getClientProperty();
+        if (null !== $property) {
             /** @var ApiClientInterface $apiClient */
-            $apiClient = $repository->findOneBy([$this->property => $username]);
+            $apiClient = $repository->findOneBy([$property => $username]);
             if (null === $apiClient) {
                 throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
             }
@@ -107,7 +103,9 @@ final class ApiClientProvider implements UserProviderInterface
             return $repository->refreshUser($user);
         }
 
-        $id = $this->entityManaager->getClassMetadata($this->apiClientClassName)->getIdentifierValues($user);
+        $id = $this->entityManaager
+            ->getClassMetadata($this->configurationProvider->getClientClass())
+            ->getIdentifierValues($user);
         if (null === $id) {
             throw new \InvalidArgumentException(self::EXCEPTION_NO_ID);
         }

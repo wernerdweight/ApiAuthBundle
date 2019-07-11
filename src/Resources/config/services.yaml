@@ -10,9 +10,21 @@ services:
 
     WernerDweight\ApiAuthBundle\Service\ConfigurationProvider:
         arguments:
+            $clientClass: '%api_auth.client.class%'
+            $clientProperty: '%api_auth.client.property%'
+            $clientUseScopeAccessModel: '%api_auth.client.use_scope_access_model%'
+            $clientAccessScopeChecker: '%api_auth.client.access_scope_checker%'
+            $userClass: '%api_auth.user.class%'
+            $userUseScopeAccessModel: '%api_auth.user.use_scope_access_model%'
+            $userAccessScopeChecker: '%api_auth.user.access_scope_checker%'
             $targetControllers: '%api_auth.target_controllers%'
 
-    WernerDweight\ApiAuthBundle\Security\ApiClientProvider:
+    WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\Checker\:
+        resource: '../../Service/AccessScopeChecker/Checker/*'
+        exclude: '../../Service/AccessScopeChecker/Checker/Abstract*'
+        tags:
+            - { name: 'api_auth.access_scope_checker' }
+
+    WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\AccessScopeCheckerFactory:
         arguments:
-            $apiClientClassName: '%api_auth.client.class%'
-            $property: '%api_auth.client.property%'
+            $scopeCheckers: !tagged api_auth.access_scope_checker

@@ -44,11 +44,13 @@ api_auth:
         class: App\Entity\ApiClient # your entity that implements ApiClientInterface
         property: clientId          # property of the entity that is used as client id
                                     # you may also make your ApiClientRepository extend UserLoaderInterface and ommit the property setting
+        access_scope_checker: App\Service\MyAccessScopeChecker  # default is RouteChecker (see below) 
     
     # api user configuration (optional)
     # if you ommit user configuration, you will not be able to use `on-behalf` access mode (see below)
     user:
         class: App\Entity\User
+        access_scope_checker: App\Service\MyAccessScopeChecker  # default is RouteChecker (see below)
 
     # list of controllers to target (optional)
     target_controllers:         # default 'WernerDweight\ApiAuthBundle\Contrtoller\ApiAuthControllerInterface'
@@ -168,6 +170,7 @@ TODO: provider
 Usage
 ------------
 
+TODO: scope access (incl. checkers)
 TODO: on-behalf
 
 ### Events
