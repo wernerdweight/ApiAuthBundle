@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d76ade48d0089926453c764da9be5e90",
+    "content-hash": "d9c74faab4296945ece9c8b25aa2cf62",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -3815,6 +3815,52 @@
                 "object"
             ],
             "time": "2019-06-17T12:20:46+00:00"
+        },
+        {
+            "name": "wernerdweight/token-generator",
+            "version": "1.0.4",
+            "target-dir": "WernerDweight/TokenGenerator",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wernerdweight/TokenGenerator.git",
+                "reference": "3240ee57c4b118ae9e279b9cd2d2764ba09943be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wernerdweight/TokenGenerator/zipball/3240ee57c4b118ae9e279b9cd2d2764ba09943be",
+                "reference": "3240ee57c4b118ae9e279b9cd2d2764ba09943be",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "wernerdweight/cs": "^1.1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "WernerDweight\\TokenGenerator\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Werner Dweight Solutions",
+                    "email": "info@wds.blue"
+                }
+            ],
+            "description": "Simple PHP random token generator",
+            "homepage": "https://github.com/wernerdweight/TokenGenerator",
+            "keywords": [
+                "generator",
+                "random",
+                "token"
+            ],
+            "time": "2019-01-27T19:41:25+00:00"
         },
         {
             "name": "zendframework/zend-code",

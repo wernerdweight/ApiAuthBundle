@@ -31,3 +31,5 @@ services:
     WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\AccessScopeCheckerFactory:
         arguments:
             $scopeCheckers: !tagged api_auth.access_scope_checker
+
+    WernerDweight\TokenGenerator\TokenGenerator: ~

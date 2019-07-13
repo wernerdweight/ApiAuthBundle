@@ -13,6 +13,7 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 use WernerDweight\ApiAuthBundle\Event\ApiUserAuthenticatedEvent;
 use WernerDweight\ApiAuthBundle\Event\ApiUserTokenRefreshEvent;
 use WernerDweight\ApiAuthBundle\Security\ApiUserProvider;
+use WernerDweight\TokenGenerator\TokenGenerator;
 
 class ApiUserAuthenticator
 {
@@ -30,20 +31,26 @@ class ApiUserAuthenticator
     /** @var ConfigurationProvider */
     private $configurationProvider;
 
+    /** @var TokenGenerator */
+    private $tokenGenerator;
+
     /**
      * ApiUserAuthenticator constructor.
      * @param ApiUserProvider $apiUserProvider
      * @param EventDispatcher $eventDispatcher
      * @param ConfigurationProvider $configurationProvider
+     * @param TokenGenerator $tokenGenerator
      */
     public function __construct(
         ApiUserProvider $apiUserProvider,
         EventDispatcherInterface $eventDispatcher,
-        ConfigurationProvider $configurationProvider
+        ConfigurationProvider $configurationProvider,
+        TokenGenerator $tokenGenerator
     ) {
         $this->apiUserProvider = $apiUserProvider;
         $this->eventDispatcher = $eventDispatcher;
         $this->configurationProvider = $configurationProvider;
+        $this->tokenGenerator = $tokenGenerator;
     }
 
     /**
@@ -65,7 +72,7 @@ class ApiUserAuthenticator
         $event = $this->eventDispatcher->dispatch(new ApiUserTokenRefreshEvent($user));
         $token = $event->getToken();
         if (null === $token) {
-            $token = $this->tokenizer->generate();
+            $token = $this->tokenGenerator->generate();
         }
         $user
             ->setApiToken($token)
