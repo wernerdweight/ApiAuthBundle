@@ -41,24 +41,37 @@ Only client configuration is mandatory, default values are mentioned in comments
 api_auth:
     # api client configuration (mandatory)
     client:
-        class: App\Entity\ApiClient # your entity that implements ApiClientInterface
-        property: clientId          # property of the entity that is used as client id
-                                    # you may also make your ApiClientRepository extend UserLoaderInterface and ommit the property setting
-        use_scope_access_model: true    # if set to true, client scope will be checked before granting access (see `scope access` below) - deafult false
-        access_scope_checker: App\Service\MyAccessScopeChecker  # default is RouteChecker (see below) 
+        # your entity that implements ApiClientInterface
+        class: App\Entity\ApiClient
+        # property of the entity that is used as client id
+        # you may also make your ApiClientRepository extend UserLoaderInterface and ommit the property setting
+        property: clientId
+        # if set to true, client scope will be checked before granting access (see `scope access` below) - deafult false
+        use_scope_access_model: true
+        # the checker used to check scope access - defaults to RouteChecker (see below)
+        access_scope_checker: App\Service\MyAccessScopeChecker 
     
     # api user configuration (optional)
     # if you ommit user configuration, you will not be able to use `on-behalf` access mode (see below)
     user:
+        # your entity that implements ApiUserInterface
         class: App\Entity\User
-        property: apiToken      # property of the entity that is used as api token (for `on-behalf` access mode)
-                                # you may also make your ApiUserRepository extend UserLoaderInterface and ommit the property setting
-        use_scope_access_model: true    # if set to true, user scope will be checked before granting access (see `scope access` below) - deafult false
-        access_scope_checker: App\Service\MyAccessScopeChecker  # default is RouteChecker (see below)
+        # property of the entity that is used as api token (for `on-behalf` access mode)
+        # you may also make your ApiUserRepository extend UserLoaderInterface and ommit the property setting
+        property: apiToken
+        # the property to use as login when authenticating user - defaults to 'username'
+        login_property: email
+        # token expiration in seconds - defaults to 2,592,000 (30 days) 
+        api_token_expiration_interval: 3600
+        # if set to true, user scope will be checked before granting access (see `scope access` below) - deafult false
+        use_scope_access_model: true
+        # the checker used to check scope access - defaults to RouteChecker (see below)
+        access_scope_checker: App\Service\MyAccessScopeChecker
 
     # list of controllers to target (optional)
-    target_controllers:         # default 'WernerDweight\ApiAuthBundle\Contrtoller\ApiAuthControllerInterface'
-        - '*'                   # all controllers or list specific controllers (see next line)
+    # default 'WernerDweight\ApiAuthBundle\Contrtoller\ApiAuthControllerInterface'
+    target_controllers:         
+        - '*'   # all controllers or list specific controllers (see next line)
         - 'My\Controller\SomeInterface'
         - 'Vendor\Bundle\Controller\SomeOtherInterface'
 ```
@@ -81,6 +94,11 @@ security:
     providers:
         wds_api_auth_provider:
             id: WernerDweight\ApiAuthBundle\Security\ApiClientProvider
+            
+    # ...
+    encoders:
+        App\Entity\User:    # your user entity
+            algorithm: # ...
     
     # ...
     firewalls:

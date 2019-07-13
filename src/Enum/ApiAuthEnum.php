@@ -24,4 +24,9 @@ class ApiAuthEnum
         self::SCOPE_ACCESSIBILITY_FORBIDDEN,
         self::SCOPE_ACCESSIBILITY_ON_BEHALF,
     ];
+
+    /** @var string */
+    public const ROUTE_KEY = '_route';
+    /** @var string */
+    public const REALM = 'Basic realm="API"';
 }

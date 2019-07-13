@@ -36,12 +36,17 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     /** @var string */
     private const EXCEPTION_NO_USER_TOKEN =
         'No user token present in headers! You must provide value for the header %s.';
+    /** @var string */
+    private const AUTH_ROUTE_NAME = 'wds_api_auth_authenticate';
 
     /** @var string|null */
     private $apiUserToken;
 
     /** @var ApiUserInterface|null */
     private $apiUser;
+
+    /** @var string */
+    private $route;
 
     /** @var Security */
     private $security;
@@ -111,6 +116,8 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
             return false;
         }
 
+        $this->route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+
         if ($headers->has(ApiAuthEnum::API_USER_TOKEN_HEADER)) {
             /** @var string $token */
             $token = $headers->get(ApiAuthEnum::API_USER_TOKEN_HEADER);
@@ -158,7 +165,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     {
         if (null === $this->apiUserToken) {
             throw new UnauthorizedHttpException(
-                'Basic realm="API"',
+                ApiAuthEnum::REALM,
                 \Safe\sprintf(self::EXCEPTION_NO_USER_TOKEN, ApiAuthEnum::API_USER_TOKEN_HEADER)
             );
         }
@@ -198,6 +205,11 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     {
         if ($user->getClientSecret() !== $credentials->getClientSecret()) {
             return false;
+        }
+
+        // no more checks for login action
+        if (self::AUTH_ROUTE_NAME === $this->route) {
+            return true;
         }
 
         // check api client scope

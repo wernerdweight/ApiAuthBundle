@@ -7,12 +7,18 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use WernerDweight\ApiAuthBundle\DTO\ApiUserCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
+use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\ApiAuthBundle\Exception\ApiUserProviderException;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 use WernerDweight\RA\RA;
@@ -21,6 +27,8 @@ final class ApiUserProvider implements UserProviderInterface
 {
     /** @var string */
     private const EXCEPTION_NOT_FOUND = 'There is no ApiUser for given api token!';
+    /** @var string */
+    private const EXCEPTION_NO_SUCH_CREDENTIALS = 'There is no ApiUser for given credentials!';
     /** @var string */
     private const EXCEPTION_NO_ID =
         'You cannot refresh a user from the EntityUserProvider that does not contain an identifier. ' .
@@ -43,18 +51,24 @@ final class ApiUserProvider implements UserProviderInterface
     /** @var ConfigurationProvider */
     private $configurationProvider;
 
+    /** @var UserPasswordEncoderInterface */
+    private $passwordEncoder;
+
     /**
      * ApiUserProvider constructor.
      *
      * @param EntityManager         $entityManager
      * @param ConfigurationProvider $configurationProvider
+     * @param UserPasswordEncoderInterface $passwordEncoder
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ConfigurationProvider $configurationProvider
+        ConfigurationProvider $configurationProvider,
+        UserPasswordEncoderInterface $passwordEncoder
     ) {
         $this->entityManaager = $entityManager;
         $this->configurationProvider = $configurationProvider;
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     /**
@@ -161,5 +175,24 @@ final class ApiUserProvider implements UserProviderInterface
     {
         $implementedInterfaces = new RA(\Safe\class_implements($class));
         return $implementedInterfaces->contains(ApiUserInterface::class);
+    }
+
+    /**
+     * @param ApiUserCredentials $credentials
+     * @return ApiUserInterface
+     * @throws \Safe\Exceptions\StringsException
+     */
+    public function loadImplicitUser(ApiUserCredentials $credentials): ApiUserInterface
+    {
+        $loginProperty = $this->configurationProvider->getUserLoginProperty();
+        $user = $this->getRepository()->findOneBy([
+            $loginProperty => $credentials->getLogin(),
+        ]);
+
+        if (null === $user || true !== $this->passwordEncoder->isPasswordValid($user, $credentials->getPassword())) {
+            throw new UnauthorizedHttpException(ApiAuthEnum::REALM, self::EXCEPTION_NO_SUCH_CREDENTIALS);
+        }
+
+        return $user;
     }
 }

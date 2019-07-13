@@ -46,6 +46,14 @@ class ApiAuthExtension extends Extension
             $config['user']['property'] ?? null
         );
         $container->setParameter(
+            'api_auth.user.login_property',
+            $config['user']['login_property']
+        );
+        $container->setParameter(
+            'api_auth.user.api_token_expiration_interval',
+            $config['user']['api_token_expiration_interval']
+        );
+        $container->setParameter(
             'api_auth.user.use_scope_access_model',
             $config['user']['use_scope_access_model'] ?? false
         );

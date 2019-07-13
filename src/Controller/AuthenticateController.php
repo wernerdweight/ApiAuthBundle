@@ -5,6 +5,7 @@ namespace WernerDweight\ApiAuthBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use WernerDweight\ApiAuthBundle\Service\ApiUserAuthenticator;
 
 final class AuthenticateController extends AbstractController implements ApiAuthControllerInterface
@@ -14,9 +15,9 @@ final class AuthenticateController extends AbstractController implements ApiAuth
      *
      * @return JsonResponse
      */
-    public function index(ApiUserAuthenticator $authenticator): JsonResponse
+    public function index(Request $request, ApiUserAuthenticator $authenticator): JsonResponse
     {
-        $user = $authenticator->authenticate();
+        $user = $authenticator->authenticate($request);
         return $this->json($user);
     }
 }

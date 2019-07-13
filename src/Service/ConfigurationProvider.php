@@ -25,6 +25,12 @@ class ConfigurationProvider
     /** @var string|null */
     private $userProperty;
 
+    /** @var string */
+    private $userLoginProperty;
+
+    /** @var int */
+    private $userApiTokenExpirationInterval;
+
     /** @var bool */
     private $userUseScopeAccessModel;
 
@@ -36,16 +42,17 @@ class ConfigurationProvider
 
     /**
      * ConfigurationProvider constructor.
-     *
-     * @param string      $clientClass
+     * @param string $clientClass
      * @param string|null $clientProperty
-     * @param bool        $clientUseScopeAccessModel
-     * @param string      $clientAccessScopeChecker
+     * @param bool $clientUseScopeAccessModel
+     * @param string $clientAccessScopeChecker
      * @param string|null $userClass
      * @param string|null $userProperty
-     * @param bool        $userUseScopeAccessModel
-     * @param string      $userAccessScopeChecker
-     * @param array       $targetControllers
+     * @param string $userLoginProperty
+     * @param int $userApiTokenExpirationInterval
+     * @param bool $userUseScopeAccessModel
+     * @param string $userAccessScopeChecker
+     * @param array $targetControllers
      */
     public function __construct(
         string $clientClass,
@@ -54,6 +61,8 @@ class ConfigurationProvider
         string $clientAccessScopeChecker,
         ?string $userClass,
         ?string $userProperty,
+        string $userLoginProperty,
+        int $userApiTokenExpirationInterval,
         bool $userUseScopeAccessModel,
         string $userAccessScopeChecker,
         array $targetControllers
@@ -64,6 +73,8 @@ class ConfigurationProvider
         $this->clientAccessScopeChecker = $clientAccessScopeChecker;
         $this->userClass = $userClass;
         $this->userProperty = $userProperty;
+        $this->userLoginProperty = $userLoginProperty;
+        $this->userApiTokenExpirationInterval = $userApiTokenExpirationInterval;
         $this->userUseScopeAccessModel = $userUseScopeAccessModel;
         $this->userAccessScopeChecker = $userAccessScopeChecker;
         $this->targetControllers = new RA($targetControllers);
@@ -115,6 +126,22 @@ class ConfigurationProvider
     public function getUserProperty(): ?string
     {
         return $this->userProperty;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserLoginProperty(): string
+    {
+        return $this->userLoginProperty;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserApiTokenExpirationInterval(): int
+    {
+        return $this->userApiTokenExpirationInterval;
     }
 
     /**

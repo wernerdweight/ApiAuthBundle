@@ -7,10 +7,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
+use WernerDweight\ApiAuthBundle\Exception\DoctrineCrudApiCheckerException;
 use WernerDweight\ApiAuthBundle\Exception\RouteCheckerException;
 
-final class RouteChecker implements AccessScopeCheckerInterface
+final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
 {
+    /** @var string */
+    private const ENTITY_NAME_KEY = 'entityName';
+    /** @var string */
+    private const DOCTRINE_CRUD_API_ROUTE_PREFIX = 'wds_doctrine_crud_api_';
+
     /** @var Request */
     private $request;
 
@@ -23,7 +29,7 @@ final class RouteChecker implements AccessScopeCheckerInterface
     {
         $request = $requestStack->getCurrentRequest();
         if (null === $request) {
-            throw new RouteCheckerException(RouteCheckerException::EXCEPTION_NO_REQUEST);
+            throw new DoctrineCrudApiCheckerException(DoctrineCrudApiCheckerException::EXCEPTION_NO_REQUEST);
         }
         $this->request = $request;
     }
@@ -37,7 +43,14 @@ final class RouteChecker implements AccessScopeCheckerInterface
      */
     public function check(AccessScope $scope): string
     {
-        $route = $this->request->attributes->get(ApiAuthEnum::ROUTE_KEY);
-        return $scope->isAccessible($route);
+        $attributes = $this->request->attributes;
+        $route = $attributes->get(ApiAuthEnum::ROUTE_KEY);
+        if (false === strpos($route, self::DOCTRINE_CRUD_API_ROUTE_PREFIX)) {
+            return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
+        }
+
+        $action = \Safe\substr($route, strlen(self::DOCTRINE_CRUD_API_ROUTE_PREFIX));
+        $entityName = $attributes->get(self::ENTITY_NAME_KEY);
+        return $scope->isAccessible(\Safe\sprintf('%s.%s', $entityName, $action));
     }
 }

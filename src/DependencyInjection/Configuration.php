@@ -10,6 +10,11 @@ use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\Checker\RouteChecker;
 
 final class Configuration implements ConfigurationInterface
 {
+    /** @var string */
+    private const DEFAULT_LOGIN_PROPERTY = 'username';
+    /** @var int */
+    private const DEFAULT_API_TOKEN_EXPIRATION_INTERVAL = 2592000;  // 30 days in seconds
+
     /**
      * @return TreeBuilder
      */
@@ -56,6 +61,12 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                         ->scalarNode('property')
                             ->defaultNull()
+                        ->end()
+                        ->scalarNode('login_property')
+                            ->defaultValue(self::DEFAULT_LOGIN_PROPERTY)
+                        ->end()
+                        ->integerNode('api_token_expiration_interval')
+                            ->defaultValue(self::DEFAULT_API_TOKEN_EXPIRATION_INTERVAL)
                         ->end()
                         ->booleanNode('use_scope_access_model')
                             ->defaultFalse()
