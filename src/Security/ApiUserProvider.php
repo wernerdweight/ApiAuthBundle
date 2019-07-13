@@ -62,11 +62,14 @@ final class ApiUserProvider implements UserProviderInterface
      */
     private function getUserClass(): string
     {
-        $userClass = $this->configurationProvider->getUserClass();
-        if (null === $userClass) {
-            throw new ApiUserProviderException(ApiUserProviderException::EXCEPTION_NO_USER_CLASS);
+        if (null === $this->userClass) {
+            $userClass = $this->configurationProvider->getUserClass();
+            if (null === $userClass) {
+                throw new ApiUserProviderException(ApiUserProviderException::EXCEPTION_NO_USER_CLASS);
+            }
+            $this->userClass = $userClass;
         }
-        $this->userClass = $userClass;
+        return $this->userClass;
     }
 
     /**
