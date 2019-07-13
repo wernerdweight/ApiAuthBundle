@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Entity;
 
+use WernerDweight\ApiAuthBundle\DTO\AccessScope;
+
 interface ApiUserInterface extends \JsonSerializable
 {
     /**
@@ -30,7 +32,7 @@ interface ApiUserInterface extends \JsonSerializable
     public function getApiTokenExpirationDate(): ?\DateTime;
 
     /**
-     * @return array
+     * @return AccessScope
      */
-    public function getUserScope(): array;
+    public function getUserScope(): AccessScope;
 }

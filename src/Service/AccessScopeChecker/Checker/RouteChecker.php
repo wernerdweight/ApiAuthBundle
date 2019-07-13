@@ -29,9 +29,14 @@ class RouteChecker implements AccessScopeCheckerInterface
         $this->request = $request;
     }
 
+    /**
+     * @param AccessScope $scope
+     * @return string
+     * @throws \WernerDweight\RA\Exception\RAException
+     */
     public function check(AccessScope $scope): string
     {
         $route = $this->request->attributes->get(self::ROUTE_KEY);
-        dump($route, $scope);exit;
+        return $scope->isAccessible($route);
     }
 }

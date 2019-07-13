@@ -18,4 +18,10 @@ class ApiAuthEnum
     public const SCOPE_ACCESSIBILITY_FORBIDDEN = 'false';
     /** @var string */
     public const SCOPE_ACCESSIBILITY_ON_BEHALF = 'on-behalf';
+    /** @var string[] */
+    public const SCOPE_ACCESSIBILITY_OPTIONS = [
+        self::SCOPE_ACCESSIBILITY_ACCESSIBLE,
+        self::SCOPE_ACCESSIBILITY_FORBIDDEN,
+        self::SCOPE_ACCESSIBILITY_ON_BEHALF,
+    ];
 }

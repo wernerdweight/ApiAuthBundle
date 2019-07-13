@@ -22,6 +22,9 @@ class ConfigurationProvider
     /** @var string|null */
     private $userClass;
 
+    /** @var string|null */
+    private $userProperty;
+
     /** @var bool */
     private $userUseScopeAccessModel;
 
@@ -38,6 +41,7 @@ class ConfigurationProvider
      * @param bool $clientUseScopeAccessModel
      * @param string $clientAccessScopeChecker
      * @param string|null $userClass
+     * @param string|null $userProperty
      * @param bool $userUseScopeAccessModel
      * @param string $userAccessScopeChecker
      * @param array $targetControllers
@@ -48,6 +52,7 @@ class ConfigurationProvider
         bool $clientUseScopeAccessModel,
         string $clientAccessScopeChecker,
         ?string $userClass,
+        ?string $userProperty,
         bool $userUseScopeAccessModel,
         string $userAccessScopeChecker,
         array $targetControllers
@@ -57,6 +62,7 @@ class ConfigurationProvider
         $this->clientUseScopeAccessModel = $clientUseScopeAccessModel;
         $this->clientAccessScopeChecker = $clientAccessScopeChecker;
         $this->userClass = $userClass;
+        $this->userProperty = $userProperty;
         $this->userUseScopeAccessModel = $userUseScopeAccessModel;
         $this->userAccessScopeChecker = $userAccessScopeChecker;
         $this->targetControllers = new RA($targetControllers);
@@ -100,6 +106,14 @@ class ConfigurationProvider
     public function getUserClass(): ?string
     {
         return $this->userClass;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserProperty(): ?string
+    {
+        return $this->userProperty;
     }
 
     /**

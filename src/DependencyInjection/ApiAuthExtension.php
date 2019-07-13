@@ -20,7 +20,7 @@ class ApiAuthExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        
+
         $container->setParameter(
             'api_auth.client.class',
             $config['client']['class']
@@ -40,6 +40,10 @@ class ApiAuthExtension extends Extension
         $container->setParameter(
             'api_auth.user.class',
             $config['user']['class'] ?? null
+        );
+        $container->setParameter(
+            'api_auth.user.property',
+            $config['user']['property'] ?? null
         );
         $container->setParameter(
             'api_auth.user.use_scope_access_model',

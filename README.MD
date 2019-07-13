@@ -44,12 +44,16 @@ api_auth:
         class: App\Entity\ApiClient # your entity that implements ApiClientInterface
         property: clientId          # property of the entity that is used as client id
                                     # you may also make your ApiClientRepository extend UserLoaderInterface and ommit the property setting
+        use_scope_access_model: true    # if set to true, client scope will be checked before granting access (see `scope access` below) - deafult false
         access_scope_checker: App\Service\MyAccessScopeChecker  # default is RouteChecker (see below) 
     
     # api user configuration (optional)
     # if you ommit user configuration, you will not be able to use `on-behalf` access mode (see below)
     user:
         class: App\Entity\User
+        property: apiToken      # property of the entity that is used as api token (for `on-behalf` access mode)
+                                # you may also make your ApiUserRepository extend UserLoaderInterface and ommit the property setting
+        use_scope_access_model: true    # if set to true, user scope will be checked before granting access (see `scope access` below) - deafult false
         access_scope_checker: App\Service\MyAccessScopeChecker  # default is RouteChecker (see below)
 
     # list of controllers to target (optional)
@@ -91,6 +95,7 @@ security:
             # anonymous: false
             
             # if you want, disable storing the client in the session
+            # you MUST set stateless to `true` if you want to use `on behalf` access mode (see below)
             # stateless: true
 ```
 
@@ -122,9 +127,9 @@ class ApiClient implements ApiClientInterface
         ...
     }
 
-    public function getClientScope(): array
+    public function getClientScope(): AccessScope
     {
-        ...
+        return new AccessScope($this->clientScope);
     }
 }
 ```
@@ -158,9 +163,9 @@ class ApiUser implements ApiUserInterface
         ...
     }
     
-    public function getUserScope(): array
+    public function getUserScope(): AccessScope
     {
-        ...
+        return new AccessScope($this->userScope);
     }
 }
 ```
@@ -170,8 +175,8 @@ TODO: provider
 Usage
 ------------
 
-TODO: scope access (incl. checkers)
-TODO: on-behalf
+TODO: scope access (incl. checkers - tag to imoplement your own)
+TODO: on-behalf access mode
 
 ### Events
 

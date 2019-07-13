@@ -5,7 +5,7 @@ namespace WernerDweight\ApiAuthBundle\Exception;
 
 use WernerDweight\EnhancedException\Exception\AbstractEnhancedException;
 
-class ApiClientAuthenticatorException extends AbstractEnhancedException
+class ApiUserProviderException extends AbstractEnhancedException
 {
     /** @var int */
     public const EXCEPTION_NO_USER_CLASS = 1;
