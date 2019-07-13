@@ -39,8 +39,8 @@ final class ApiClientProvider implements UserProviderInterface
     /**
      * ApiUserProvider constructor.
      *
-     * @param EntityManagerInterface $entityManager
-     * @param ConfigurationProvider  $configurationProvider
+     * @param EntityManager         $entityManager
+     * @param ConfigurationProvider $configurationProvider
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -61,7 +61,7 @@ final class ApiClientProvider implements UserProviderInterface
     /**
      * @param string $username
      *
-     * @return UserInterface
+     * @return ApiClientInterface
      *
      * @throws \Safe\Exceptions\StringsException
      */
@@ -70,7 +70,7 @@ final class ApiClientProvider implements UserProviderInterface
         $repository = $this->getRepository();
         $property = $this->configurationProvider->getClientProperty();
         if (null !== $property) {
-            /** @var ApiClientInterface $apiClient */
+            /** @var ApiClientInterface|null $apiClient */
             $apiClient = $repository->findOneBy([$property => $username]);
             if (null === $apiClient) {
                 throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
@@ -79,7 +79,12 @@ final class ApiClientProvider implements UserProviderInterface
         }
 
         if ($repository instanceof UserLoaderInterface) {
-            return $repository->loadUserByUsername($username);
+            /** @var ApiClientInterface|null $apiClient */
+            $apiClient = $repository->loadUserByUsername($username);
+            if (null === $apiClient) {
+                throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
+            }
+            return $apiClient;
         }
 
         throw new \InvalidArgumentException(\Safe\sprintf(self::EXCEPTION_UNABLE_TO_LOAD, get_class($repository)));
@@ -88,7 +93,7 @@ final class ApiClientProvider implements UserProviderInterface
     /**
      * @param UserInterface $user
      *
-     * @return UserInterface
+     * @return ApiClientInterface
      *
      * @throws \Safe\Exceptions\StringsException
      */
@@ -100,16 +105,19 @@ final class ApiClientProvider implements UserProviderInterface
 
         $repository = $this->getRepository();
         if ($repository instanceof UserProviderInterface) {
-            return $repository->refreshUser($user);
+            /** @var ApiClientInterface $apiClient */
+            $apiClient = $repository->refreshUser($user);
+            return $apiClient;
         }
 
         $id = $this->entityManaager
             ->getClassMetadata($this->configurationProvider->getClientClass())
             ->getIdentifierValues($user);
-        if (null === $id) {
+        if (true === empty($id)) {
             throw new \InvalidArgumentException(self::EXCEPTION_NO_ID);
         }
 
+        /** @var ApiClientInterface|null $apiClient */
         $apiClient = $repository->find($id);
         if (null === $apiClient) {
             throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);

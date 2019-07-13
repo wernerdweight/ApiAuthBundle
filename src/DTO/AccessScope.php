@@ -16,6 +16,7 @@ class AccessScope
 
     /**
      * AccessScope constructor.
+     *
      * @param array $scope
      */
     public function __construct(array $scope)
@@ -25,7 +26,9 @@ class AccessScope
 
     /**
      * @param string $key
+     *
      * @return string
+     *
      * @throws \WernerDweight\RA\Exception\RAException
      */
     public function isAccessible(string $key): string

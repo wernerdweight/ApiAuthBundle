@@ -19,7 +19,7 @@ interface ApiClientInterface extends UserInterface
     public function getClientSecret(): string;
 
     /**
-     * @return array
+     * @return AccessScope
      */
     public function getClientScope(): AccessScope;
 }

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Event;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\Event;
 use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
@@ -24,8 +23,9 @@ class ApiClientCredentialsCheckedEvent extends Event
 
     /**
      * ApiClientCredentialsCheckedEvent constructor.
+     *
      * @param ApiClientCredentials $credentials
-     * @param ApiClientInterface $apiClient
+     * @param ApiClientInterface   $apiClient
      */
     public function __construct(ApiClientCredentials $credentials, ApiClientInterface $apiClient)
     {
@@ -51,6 +51,7 @@ class ApiClientCredentialsCheckedEvent extends Event
 
     /**
      * @param bool $valid
+     *
      * @return ApiClientCredentialsCheckedEvent
      */
     public function setValid(bool $valid): self

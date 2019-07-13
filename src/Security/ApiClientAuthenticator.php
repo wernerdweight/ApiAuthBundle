@@ -7,6 +7,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Security;
@@ -22,7 +23,6 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\ApiAuthBundle\Event\ApiClientCredentialsCheckedEvent;
 use WernerDweight\ApiAuthBundle\Event\ApiUserTokenCheckedEvent;
-use WernerDweight\ApiAuthBundle\Exception\ApiClientAuthenticatorException;
 use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\AccessScopeCheckerFactory;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 
@@ -33,6 +33,9 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     /** @var string */
     private const UNAUTHORIZED_MESSAGE =
         'Client id, secret or user api token are invalid, expired or not allowed access!';
+    /** @var string */
+    private const EXCEPTION_NO_USER_TOKEN =
+        'No user token present in headers! You must provide value for the header %s.';
 
     /** @var string|null */
     private $apiUserToken;
@@ -57,11 +60,12 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
 
     /**
      * ApiClientAuthenticator constructor.
-     * @param Security $security
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param ConfigurationProvider $configurationProvider
+     *
+     * @param Security                  $security
+     * @param EventDispatcher           $eventDispatcher
+     * @param ConfigurationProvider     $configurationProvider
      * @param AccessScopeCheckerFactory $accessScopeCheckerFactory
-     * @param ApiUserProvider $apiUserProvider
+     * @param ApiUserProvider           $apiUserProvider
      */
     public function __construct(
         Security $security,
@@ -108,7 +112,9 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
         }
 
         if ($headers->has(ApiAuthEnum::API_USER_TOKEN_HEADER)) {
-            $this->apiUserToken = $headers->get(ApiAuthEnum::API_USER_TOKEN_HEADER);
+            /** @var string $token */
+            $token = $headers->get(ApiAuthEnum::API_USER_TOKEN_HEADER);
+            $this->apiUserToken = $token;
         }
 
         return true;
@@ -122,10 +128,11 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     public function getCredentials(Request $request): ApiClientCredentials
     {
         $headers = $request->headers;
-        return new ApiClientCredentials(
-            $headers->get(ApiAuthEnum::CLIENT_ID_HEADER),
-            $headers->get(ApiAuthEnum::CLIENT_SECRET_HEADER)
-        );
+        /** @var string $clientId */
+        $clientId = $headers->get(ApiAuthEnum::CLIENT_ID_HEADER);
+        /** @var string $clientSecret */
+        $clientSecret = $headers->get(ApiAuthEnum::CLIENT_SECRET_HEADER);
+        return new ApiClientCredentials($clientId, $clientSecret);
     }
 
     /**
@@ -136,16 +143,26 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function getUser($credentials, UserProviderInterface $userProvider): UserInterface
     {
-        return $userProvider->loadUserByUsername($credentials->getClientId());
+        /** @var ApiClientInterface $apiClient */
+        $apiClient = $userProvider->loadUserByUsername($credentials->getClientId());
+        return $apiClient;
     }
 
     /**
      * @return bool
+     *
      * @throws \Safe\Exceptions\StringsException
      * @throws \WernerDweight\RA\Exception\RAException
      */
     private function checkUserApiToken(): bool
     {
+        if (null === $this->apiUserToken) {
+            throw new UnauthorizedHttpException(
+                'Basic realm="API"',
+                \Safe\sprintf(self::EXCEPTION_NO_USER_TOKEN, ApiAuthEnum::API_USER_TOKEN_HEADER)
+            );
+        }
+
         // authenticate user by api token
         $apiUser = $this->apiUserProvider->loadUserByUsername($this->apiUserToken);
 
@@ -215,7 +232,9 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function createAuthenticatedToken(UserInterface $user, $providerKey): GuardTokenInterface
     {
-        return new PostAuthenticationGuardToken($user, $providerKey, $user->getRoles());
+        /** @var string[] $roles */
+        $roles = $user->getRoles();
+        return new PostAuthenticationGuardToken($user, $providerKey, $roles);
     }
 
     /**

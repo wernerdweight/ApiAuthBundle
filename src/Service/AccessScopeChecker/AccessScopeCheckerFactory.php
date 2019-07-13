@@ -15,6 +15,7 @@ class AccessScopeCheckerFactory
 
     /**
      * AccessScopeCheckerFactory constructor.
+     *
      * @param RewindableGenerator $scopeCheckers
      */
     public function __construct(RewindableGenerator $scopeCheckers)

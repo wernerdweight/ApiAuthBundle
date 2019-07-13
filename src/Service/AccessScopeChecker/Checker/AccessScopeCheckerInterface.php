@@ -11,9 +11,10 @@ interface AccessScopeCheckerInterface
      * Returns one of:
      *  - ApiAuthEnum::SCOPE_ACCESSIBILITY_ACCESSIBLE (unrestricted access)
      *  - ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN (access denied)
-     *  - ApiAuthEnum::SCOPE_ACCESSIBILITY_ON_BEHALF (access allowed if user provided)
+     *  - ApiAuthEnum::SCOPE_ACCESSIBILITY_ON_BEHALF (access allowed if user provided).
      *
      * @param AccessScope $scope
+     *
      * @return string
      */
     public function check(AccessScope $scope): string;

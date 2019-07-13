@@ -22,7 +22,8 @@
         "thecodingmachine/safe": "^0.1.13",
         "wernerdweight/ra": "^0.3.3",
         "wernerdweight/enhanced-exception": "^1.0",
-        "symfony/security-bundle": "^4.3"
+        "symfony/security-bundle": "^4.3",
+        "symfony/orm-pack": "^1.0"
     },
     "require-dev": {
         "wernerdweight/cs": "^1.2.1",

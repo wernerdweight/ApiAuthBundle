@@ -12,7 +12,6 @@ class ApiUserProviderException extends AbstractEnhancedException
 
     /** @var string[] */
     protected static $messages = [
-        self::EXCEPTION_NO_USER_CLASS =>
-            'User class not configured! You must configure user class if you want to use on-behalf access mode.',
+        self::EXCEPTION_NO_USER_CLASS => 'User class not configured! You must configure user class if you want to use on-behalf access mode.',
     ];
 }

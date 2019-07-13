@@ -12,7 +12,6 @@ class AccessScopeCheckerFactoryException extends AbstractEnhancedException
 
     /** @var string[] */
     protected static $messages = [
-        self::EXCEPTION_UNKNOWN_CHECKER =>
-            'The requested checker %s was not found! Make sure your checker exists and is correctly tagged.',
+        self::EXCEPTION_UNKNOWN_CHECKER => 'The requested checker %s was not found! Make sure your checker exists and is correctly tagged.',
     ];
 }
