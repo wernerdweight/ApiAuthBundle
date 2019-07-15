@@ -15,6 +15,7 @@ services:
             $clientUseScopeAccessModel: '%api_auth.client.use_scope_access_model%'
             $clientAccessScopeChecker: '%api_auth.client.access_scope_checker%'
             $userClass: '%api_auth.user.class%'
+            $userToken: '%api_auth.user.token%'
             $userProperty: '%api_auth.user.property%'
             $userLoginProperty: '%api_auth.user.login_property%'
             $userApiTokenExpirationInterval: '%api_auth.user.api_token_expiration_interval%'

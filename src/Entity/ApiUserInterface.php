@@ -15,6 +15,11 @@ interface ApiUserInterface extends \JsonSerializable
     public function addApiToken(ApiUserTokenInterface $apiToken): self;
 
     /**
+     * @return ApiUserTokenInterface|null
+     */
+    public function getCurrentToken(): ?ApiUserTokenInterface;
+
+    /**
      * @return AccessScope
      */
     public function getUserScope(): AccessScope;

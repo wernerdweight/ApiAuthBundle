@@ -56,6 +56,8 @@ api_auth:
     user:
         # your entity that implements ApiUserInterface
         class: App\Entity\User
+        # your entity that implements ApiUserTokenInterface
+        token: App\Entity\UserToken
         # property of the entity that is used as api token (for `on-behalf` access mode)
         # you may also make your ApiUserRepository extend UserLoaderInterface and ommit the property setting
         property: apiToken

@@ -11,10 +11,11 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use WernerDweight\ApiAuthBundle\DTO\ApiUserCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
+use WernerDweight\ApiAuthBundle\Entity\ApiUserTokenInterface;
 use WernerDweight\ApiAuthBundle\Event\ApiUserAuthenticatedEvent;
 use WernerDweight\ApiAuthBundle\Event\ApiUserTokenRefreshEvent;
+use WernerDweight\ApiAuthBundle\Exception\ApiUserAuthenticatorException;
 use WernerDweight\ApiAuthBundle\Security\ApiUserProvider;
-use WernerDweight\TokenGenerator\TokenGenerator;
 
 class ApiUserAuthenticator
 {
@@ -29,37 +30,31 @@ class ApiUserAuthenticator
     /** @var EventDispatcher */
     private $eventDispatcher;
 
-    /** @var ConfigurationProvider */
-    private $configurationProvider;
-
-    /** @var TokenGenerator */
-    private $tokenGenerator;
-
     /** @var EntityManagerInterface */
     private $entityManager;
+
+    /** @var ApiUserTokenFactory */
+    private $apiUserTokenFactory;
 
     /**
      * ApiUserAuthenticator constructor.
      * @param ApiUserProvider $apiUserProvider
-     * @param EventDispatcher $eventDispatcher
-     * @param ConfigurationProvider $configurationProvider
-     * @param TokenGenerator $tokenGenerator
+     * @param EventDispatcherInterface $eventDispatcher
      * @param EntityManagerInterface $entityManager
+     * @param ApiUserTokenFactory $apiUserTokenFactory
      */
     public function __construct(
         ApiUserProvider $apiUserProvider,
         EventDispatcherInterface $eventDispatcher,
-        ConfigurationProvider $configurationProvider,
-        TokenGenerator $tokenGenerator,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        ApiUserTokenFactory $apiUserTokenFactory
     ) {
         $this->apiUserProvider = $apiUserProvider;
         $this->eventDispatcher = $eventDispatcher;
-        $this->configurationProvider = $configurationProvider;
-        $this->tokenGenerator = $tokenGenerator;
         $this->entityManager = $entityManager;
+        $this->apiUserTokenFactory = $apiUserTokenFactory;
     }
-
+    
     /**
      * @param Request $request
      * @return ApiUserInterface
@@ -75,26 +70,13 @@ class ApiUserAuthenticator
         $credentials = new ApiUserCredentials($auth);
         $user = $this->apiUserProvider->loadImplicitUser($credentials);
 
-        /** @var ApiUserTokenRefreshEvent $event */
-        $event = $this->eventDispatcher->dispatch(new ApiUserTokenRefreshEvent($user));
-        $token = $event->getToken();
-        if (null === $token) {
-            $token = $this->tokenGenerator->generate();
-        }
-        $user
-            ->setApiToken($token)
-            ->setApiTokenExpirationDate(
-                new \DateTime(
-                    \Safe\sprintf(
-                        '+%d seconds',
-                        $this->configurationProvider->getUserApiTokenExpirationInterval()
-                    )
-                )
-            );
+        $token = $this->apiUserTokenFactory->create($user);
+        $user->addApiToken($token);
 
         /** @var ApiUserAuthenticatedEvent $event */
         $this->eventDispatcher->dispatch(new ApiUserAuthenticatedEvent($user));
 
+        $this->entityManager->persist($token);
         $this->entityManager->flush();
         return $user;
     }

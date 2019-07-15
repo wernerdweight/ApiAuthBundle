@@ -13,6 +13,9 @@ abstract class AbstractApiUser implements ApiUserInterface
     /** @var ArrayCollection|PersistentCollection */
     protected $apiTokens;
 
+    /** @var string|null */
+    private $currentToken;
+
     /** @var array */
     private $userScope = [];
 
@@ -50,6 +53,8 @@ abstract class AbstractApiUser implements ApiUserInterface
     public function addApiToken(ApiUserTokenInterface $apiToken): ApiUserInterface
     {
         $this->apiTokens->add($apiToken);
+        $apiToken->setApiUser($this);
+        $this->currentToken = $apiToken;
         return $this;
     }
 
@@ -71,11 +76,20 @@ abstract class AbstractApiUser implements ApiUserInterface
     }
 
     /**
+     * @return ApiUserTokenInterface|null
+     */
+    public function getCurrentToken(): ?ApiUserTokenInterface
+    {
+        return $this->currentToken;
+    }
+
+    /**
      * @return array
      */
     public function jsonSerialize(): array
     {
         return [
+            'token' => $this->getCurrentToken(),
             'userScope' => $this->getUserScope(),
         ];
     }

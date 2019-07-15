@@ -23,6 +23,9 @@ class ConfigurationProvider
     private $userClass;
 
     /** @var string|null */
+    private $userToken;
+
+    /** @var string|null */
     private $userProperty;
 
     /** @var string */
@@ -47,6 +50,7 @@ class ConfigurationProvider
      * @param bool $clientUseScopeAccessModel
      * @param string $clientAccessScopeChecker
      * @param string|null $userClass
+     * @param string|null $userToken
      * @param string|null $userProperty
      * @param string $userLoginProperty
      * @param int $userApiTokenExpirationInterval
@@ -60,6 +64,7 @@ class ConfigurationProvider
         bool $clientUseScopeAccessModel,
         string $clientAccessScopeChecker,
         ?string $userClass,
+        ?string $userToken,
         ?string $userProperty,
         string $userLoginProperty,
         int $userApiTokenExpirationInterval,
@@ -72,6 +77,7 @@ class ConfigurationProvider
         $this->clientUseScopeAccessModel = $clientUseScopeAccessModel;
         $this->clientAccessScopeChecker = $clientAccessScopeChecker;
         $this->userClass = $userClass;
+        $this->userToken = $userToken;
         $this->userProperty = $userProperty;
         $this->userLoginProperty = $userLoginProperty;
         $this->userApiTokenExpirationInterval = $userApiTokenExpirationInterval;
@@ -118,6 +124,14 @@ class ConfigurationProvider
     public function getUserClass(): ?string
     {
         return $this->userClass;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserToken(): ?string
+    {
+        return $this->userToken;
     }
 
     /**
