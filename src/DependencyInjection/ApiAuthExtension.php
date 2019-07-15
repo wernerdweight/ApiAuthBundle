@@ -46,10 +46,6 @@ class ApiAuthExtension extends Extension
             $config['user']['token'] ?? null
         );
         $container->setParameter(
-            'api_auth.user.property',
-            $config['user']['property'] ?? null
-        );
-        $container->setParameter(
             'api_auth.user.login_property',
             $config['user']['login_property']
         );

@@ -58,9 +58,6 @@ api_auth:
         class: App\Entity\User
         # your entity that implements ApiUserTokenInterface
         token: App\Entity\UserToken
-        # property of the entity that is used as api token (for `on-behalf` access mode)
-        # you may also make your ApiUserRepository extend UserLoaderInterface and ommit the property setting
-        property: apiToken
         # the property to use as login when authenticating user - defaults to 'username'
         login_property: email
         # token expiration in seconds - defaults to 2,592,000 (30 days) 
@@ -189,7 +186,7 @@ class ApiUser implements ApiUserInterface
     }
 }
 ```
-
+TODO: repository (extends AbstractApiUserRepository)
 TODO: provider
 
 Usage

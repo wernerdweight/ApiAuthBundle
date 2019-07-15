@@ -20,6 +20,7 @@ use WernerDweight\ApiAuthBundle\DTO\ApiUserCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\ApiAuthBundle\Exception\ApiUserProviderException;
+use WernerDweight\ApiAuthBundle\Repository\ApiUserRepositoryInterface;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 use WernerDweight\RA\RA;
 
@@ -36,11 +37,6 @@ final class ApiUserProvider implements UserProviderInterface
     /** @var string */
     private const EXCEPTION_UNSUPPORTED_USER =
         '%s is not a supported authentication class. Make sure your class implements ApiUserInterface!';
-    /** @var string */
-    private const EXCEPTION_UNABLE_TO_LOAD =
-        '%s must implement "UserLoaderInterface", or the "property" key must be set for user provider.';
-    /** @var string */
-    private const EXCEPTION_TOKEN_EXPIRED = 'The provided api token is expired! Please obtain a new one.';
 
     /** @var string */
     private $userClass;
@@ -87,11 +83,13 @@ final class ApiUserProvider implements UserProviderInterface
     }
 
     /**
-     * @return ObjectRepository
+     * @return ApiUserRepositoryInterface
      */
-    private function getRepository(): ObjectRepository
+    private function getRepository(): ApiUserRepositoryInterface
     {
-        return $this->entityManaager->getRepository($this->getUserClass());
+        /** @var ApiUserRepositoryInterface $repository */
+        $repository = $this->entityManaager->getRepository($this->getUserClass());
+        return $repository;
     }
 
     /**
@@ -104,32 +102,13 @@ final class ApiUserProvider implements UserProviderInterface
     public function loadUserByUsername($username): ApiUserInterface
     {
         $repository = $this->getRepository();
-        $property = $this->configurationProvider->getUserProperty();
-        if (null !== $property) {
-            /** @var ApiUserInterface|null $apiUser */
-            $apiUser = $repository->findOneBy([$property => $username]);
-            if (null === $apiUser) {
-                throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
-            }
-            if ($apiUser->getApiTokenExpirationDate() < new \DateTime()) {
-                throw new CredentialsExpiredException(self::EXCEPTION_TOKEN_EXPIRED);
-            }
-            return $apiUser;
-        }
 
-        if ($repository instanceof UserLoaderInterface) {
-            /** @var ApiUserInterface|null $apiUser */
-            $apiUser = $repository->loadUserByUsername($username);
-            if (null === $apiUser) {
-                throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
-            }
-            if ($apiUser->getApiTokenExpirationDate() < new \DateTime()) {
-                throw new CredentialsExpiredException(self::EXCEPTION_TOKEN_EXPIRED);
-            }
-            return $apiUser;
+        /** @var ApiUserInterface|null $apiUser */
+        $apiUser = $repository->findOneByToken($username);
+        if (null === $apiUser) {
+            throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
         }
-
-        throw new \InvalidArgumentException(\Safe\sprintf(self::EXCEPTION_UNABLE_TO_LOAD, get_class($repository)));
+        return $apiUser;
     }
 
     /**
