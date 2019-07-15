@@ -123,6 +123,9 @@ final class ApiUserProvider implements UserProviderInterface
             if (null === $apiUser) {
                 throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
             }
+            if ($apiUser->getApiTokenExpirationDate() < new \DateTime()) {
+                throw new CredentialsExpiredException(self::EXCEPTION_TOKEN_EXPIRED);
+            }
             return $apiUser;
         }
 

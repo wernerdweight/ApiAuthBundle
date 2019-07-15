@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -34,23 +35,29 @@ class ApiUserAuthenticator
     /** @var TokenGenerator */
     private $tokenGenerator;
 
+    /** @var EntityManagerInterface */
+    private $entityManager;
+
     /**
      * ApiUserAuthenticator constructor.
      * @param ApiUserProvider $apiUserProvider
      * @param EventDispatcher $eventDispatcher
      * @param ConfigurationProvider $configurationProvider
      * @param TokenGenerator $tokenGenerator
+     * @param EntityManagerInterface $entityManager
      */
     public function __construct(
         ApiUserProvider $apiUserProvider,
         EventDispatcherInterface $eventDispatcher,
         ConfigurationProvider $configurationProvider,
-        TokenGenerator $tokenGenerator
+        TokenGenerator $tokenGenerator,
+        EntityManagerInterface $entityManager
     ) {
         $this->apiUserProvider = $apiUserProvider;
         $this->eventDispatcher = $eventDispatcher;
         $this->configurationProvider = $configurationProvider;
         $this->tokenGenerator = $tokenGenerator;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -87,6 +94,8 @@ class ApiUserAuthenticator
 
         /** @var ApiUserAuthenticatedEvent $event */
         $this->eventDispatcher->dispatch(new ApiUserAuthenticatedEvent($user));
+
+        $this->entityManager->flush();
         return $user;
     }
 }

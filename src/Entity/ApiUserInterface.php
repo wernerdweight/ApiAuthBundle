@@ -8,28 +8,11 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 interface ApiUserInterface extends \JsonSerializable
 {
     /**
-     * @param string $apiToken
+     * @param ApiUserTokenInterface $apiToken
      *
      * @return ApiUserInterface
      */
-    public function setApiToken(string $apiToken): self;
-
-    /**
-     * @return string|null
-     */
-    public function getApiToken(): ?string;
-
-    /**
-     * @param \DateTime $apiTokenExpirationDate
-     *
-     * @return ApiUserInterface
-     */
-    public function setApiTokenExpirationDate(\DateTime $apiTokenExpirationDate): self;
-
-    /**
-     * @return \DateTime|null
-     */
-    public function getApiTokenExpirationDate(): ?\DateTime;
+    public function addApiToken(ApiUserTokenInterface $apiToken): self;
 
     /**
      * @return AccessScope

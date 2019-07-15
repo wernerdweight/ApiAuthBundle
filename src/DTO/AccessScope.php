@@ -6,7 +6,7 @@ namespace WernerDweight\ApiAuthBundle\DTO;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\RA\RA;
 
-class AccessScope
+class AccessScope implements \JsonSerializable
 {
     /** @var string */
     private const PATH_SEPARATOR = '.';
@@ -56,5 +56,13 @@ class AccessScope
             return ApiAuthEnum::SCOPE_ACCESSIBILITY_ON_BEHALF;
         }
         return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->scope->toArray(RA::RECURSIVE);
     }
 }
