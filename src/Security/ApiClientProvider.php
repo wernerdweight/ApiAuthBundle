@@ -12,6 +12,7 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
+use WernerDweight\ApiAuthBundle\Exception\ApiClientProviderException;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 use WernerDweight\RA\RA;
 
@@ -20,15 +21,8 @@ final class ApiClientProvider implements UserProviderInterface
     /** @var string */
     private const EXCEPTION_NOT_FOUND = 'There is no ApiClient for given client id!';
     /** @var string */
-    private const EXCEPTION_NO_ID =
-        'You cannot refresh a user from the EntityUserProvider that does not contain an identifier. ' .
-        'The user object has to be serialized with its own identifier mapped by Doctrine.';
-    /** @var string */
     private const EXCEPTION_UNSUPPORTED_USER =
         '%s is not a supported authentication class. Make sure your class implements ApiClientInterface!';
-    /** @var string */
-    private const EXCEPTION_UNABLE_TO_LOAD =
-        '%s must implement "UserLoaderInterface", or the "property" key must be set for user provider.';
 
     /** @var EntityManager */
     private $entityManaager;
@@ -87,7 +81,10 @@ final class ApiClientProvider implements UserProviderInterface
             return $apiClient;
         }
 
-        throw new \InvalidArgumentException(\Safe\sprintf(self::EXCEPTION_UNABLE_TO_LOAD, get_class($repository)));
+        throw new ApiClientProviderException(
+            ApiClientProviderException::EXCEPTION_UNABLE_TO_LOAD,
+            [get_class($repository)]
+        );
     }
 
     /**
@@ -114,7 +111,7 @@ final class ApiClientProvider implements UserProviderInterface
             ->getClassMetadata($this->configurationProvider->getClientClass())
             ->getIdentifierValues($user);
         if (true === empty($id)) {
-            throw new \InvalidArgumentException(self::EXCEPTION_NO_ID);
+            throw new ApiClientProviderException(ApiClientProviderException::EXCEPTION_NO_ID);
         }
 
         /** @var ApiClientInterface|null $apiClient */

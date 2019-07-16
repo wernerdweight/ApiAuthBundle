@@ -5,11 +5,10 @@ declare(strict_types=1);
  * Created by PhpStorm.
  * User: jannovotny
  * Date: 2019-07-15
- * Time: 10:14
+ * Time: 10:14.
  */
 
 namespace WernerDweight\ApiAuthBundle\Service;
-
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -35,9 +34,10 @@ class ApiUserTokenFactory
 
     /**
      * ApiUserTokenFactory constructor.
+     *
      * @param ConfigurationProvider $configurationProvider
-     * @param TokenGenerator $tokenGenerator
-     * @param EventDispatcher $eventDispatcher
+     * @param TokenGenerator        $tokenGenerator
+     * @param EventDispatcher       $eventDispatcher
      */
     public function __construct(
         ConfigurationProvider $configurationProvider,
@@ -66,6 +66,7 @@ class ApiUserTokenFactory
 
     /**
      * @param ApiUserInterface $user
+     *
      * @return string
      */
     private function generateToken(ApiUserInterface $user): string
@@ -82,7 +83,9 @@ class ApiUserTokenFactory
 
     /**
      * @param ApiUserInterface $user
+     *
      * @return ApiUserTokenInterface
+     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function create(ApiUserInterface $user): ApiUserTokenInterface

@@ -3,17 +3,12 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\PersistentCollection;
-use WernerDweight\ApiAuthBundle\DTO\AccessScope;
-
 abstract class AbstractApiUserToken implements ApiUserTokenInterface
 {
-    /** @var string */
-    private $token;
-
     /** @var \DateTime */
     private $expirationDate;
+    /** @var string */
+    private $token;
 
     /** @var ApiUserInterface */
     protected $apiUser;
@@ -58,6 +53,7 @@ abstract class AbstractApiUserToken implements ApiUserTokenInterface
 
     /**
      * @param ApiUserInterface $apiUser
+     *
      * @return ApiUserTokenInterface
      */
     public function setApiUser(ApiUserInterface $apiUser): ApiUserTokenInterface

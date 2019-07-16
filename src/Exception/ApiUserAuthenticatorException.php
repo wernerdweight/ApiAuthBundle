@@ -12,7 +12,6 @@ class ApiUserAuthenticatorException extends AbstractEnhancedException
 
     /** @var string[] */
     protected static $messages = [
-        self::EXCEPTION_NO_TOKEN_CLASS =>
-            'Token class not configured! You must configure token class if you want to use on-behalf access mode.',
+        self::EXCEPTION_NO_TOKEN_CLASS => 'Token class not configured! You must configure token class if you want to use on-behalf access mode.',
     ];
 }

@@ -10,14 +10,14 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
 abstract class AbstractApiUser implements ApiUserInterface
 {
-    /** @var ArrayCollection|PersistentCollection */
-    protected $apiTokens;
-
-    /** @var string|null */
-    private $currentToken;
-
     /** @var array */
     private $userScope = [];
+
+    /** @var ApiUserTokenInterface|null */
+    private $currentToken;
+
+    /** @var ArrayCollection|PersistentCollection */
+    protected $apiTokens;
 
     /**
      * AbstractApiUser constructor.
@@ -29,9 +29,10 @@ abstract class AbstractApiUser implements ApiUserInterface
 
     /**
      * @param array $userScope
-     * @return User
+     *
+     * @return ApiUserInterface
      */
-    public function setUserScope(array $userScope): self
+    public function setUserScope(array $userScope): ApiUserInterface
     {
         $this->userScope = $userScope;
         return $this;
@@ -60,6 +61,7 @@ abstract class AbstractApiUser implements ApiUserInterface
 
     /**
      * @param ApiUserTokenInterface $apiUserToken
+     *
      * @return bool
      */
     public function removeApiToken(ApiUserTokenInterface $apiUserToken): bool

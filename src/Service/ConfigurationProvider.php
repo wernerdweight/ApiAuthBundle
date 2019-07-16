@@ -42,17 +42,18 @@ class ConfigurationProvider
 
     /**
      * ConfigurationProvider constructor.
-     * @param string $clientClass
+     *
+     * @param string      $clientClass
      * @param string|null $clientProperty
-     * @param bool $clientUseScopeAccessModel
-     * @param string $clientAccessScopeChecker
+     * @param bool        $clientUseScopeAccessModel
+     * @param string      $clientAccessScopeChecker
      * @param string|null $userClass
      * @param string|null $userToken
-     * @param string $userLoginProperty
-     * @param int $userApiTokenExpirationInterval
-     * @param bool $userUseScopeAccessModel
-     * @param string $userAccessScopeChecker
-     * @param array $targetControllers
+     * @param string      $userLoginProperty
+     * @param int         $userApiTokenExpirationInterval
+     * @param bool        $userUseScopeAccessModel
+     * @param string      $userAccessScopeChecker
+     * @param array       $targetControllers
      */
     public function __construct(
         string $clientClass,

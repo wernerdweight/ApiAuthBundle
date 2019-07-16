@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace WernerDweight\ApiAuthBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
-use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 
 /**
  * @method ApiUserInterface|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,7 +16,9 @@ abstract class AbstractApiUserRepository extends ServiceEntityRepository impleme
 {
     /**
      * @param string $token
+     *
      * @return ApiUserInterface|null
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findOneByToken(string $token): ?ApiUserInterface

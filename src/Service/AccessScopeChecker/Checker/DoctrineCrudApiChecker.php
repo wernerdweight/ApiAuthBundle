@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\ApiAuthBundle\Exception\DoctrineCrudApiCheckerException;
-use WernerDweight\ApiAuthBundle\Exception\RouteCheckerException;
 
 final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
 {

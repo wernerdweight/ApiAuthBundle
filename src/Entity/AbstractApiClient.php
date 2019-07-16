@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Entity;
 
-use Symfony\Component\Security\Core\User\UserInterface;
 use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
-abstract class AbstractApiClient implements ApiClientInterface, UserInterface
+abstract class AbstractApiClient implements ApiClientInterface
 {
     /** @var string */
     private $clientId;
@@ -27,6 +26,7 @@ abstract class AbstractApiClient implements ApiClientInterface, UserInterface
 
     /**
      * @param string $clientId
+     *
      * @return ApiClientInterface
      */
     public function setClientId(string $clientId): ApiClientInterface
@@ -45,6 +45,7 @@ abstract class AbstractApiClient implements ApiClientInterface, UserInterface
 
     /**
      * @param string $clientSecret
+     *
      * @return ApiClientInterface
      */
     public function setClientSecret(string $clientSecret): ApiClientInterface
@@ -63,6 +64,7 @@ abstract class AbstractApiClient implements ApiClientInterface, UserInterface
 
     /**
      * @param array $clientScope
+     *
      * @return ApiClientInterface
      */
     public function setClientScope(array $clientScope): ApiClientInterface

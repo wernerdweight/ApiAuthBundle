@@ -3,15 +3,10 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -31,10 +26,6 @@ final class ApiUserProvider implements UserProviderInterface
     /** @var string */
     private const EXCEPTION_NO_SUCH_CREDENTIALS = 'There is no ApiUser for given credentials!';
     /** @var string */
-    private const EXCEPTION_NO_ID =
-        'You cannot refresh a user from the EntityUserProvider that does not contain an identifier. ' .
-        'The user object has to be serialized with its own identifier mapped by Doctrine.';
-    /** @var string */
     private const EXCEPTION_UNSUPPORTED_USER =
         '%s is not a supported authentication class. Make sure your class implements ApiUserInterface!';
 
@@ -53,8 +44,8 @@ final class ApiUserProvider implements UserProviderInterface
     /**
      * ApiUserProvider constructor.
      *
-     * @param EntityManager         $entityManager
-     * @param ConfigurationProvider $configurationProvider
+     * @param EntityManager                $entityManager
+     * @param ConfigurationProvider        $configurationProvider
      * @param UserPasswordEncoderInterface $passwordEncoder
      */
     public function __construct(
@@ -135,7 +126,7 @@ final class ApiUserProvider implements UserProviderInterface
             ->getClassMetadata($this->getUserClass())
             ->getIdentifierValues($user);
         if (true === empty($id)) {
-            throw new \InvalidArgumentException(self::EXCEPTION_NO_ID);
+            throw new ApiUserProviderException(ApiUserProviderException::EXCEPTION_NO_ID);
         }
 
         /** @var ApiUserInterface|null $apiUser */
@@ -161,12 +152,15 @@ final class ApiUserProvider implements UserProviderInterface
 
     /**
      * @param ApiUserCredentials $credentials
+     *
      * @return ApiUserInterface
+     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function loadImplicitUser(ApiUserCredentials $credentials): ApiUserInterface
     {
         $loginProperty = $this->configurationProvider->getUserLoginProperty();
+        /** @var (ApiUserInterface & UserInterface)|null $user */
         $user = $this->getRepository()->findOneBy([
             $loginProperty => $credentials->getLogin(),
         ]);

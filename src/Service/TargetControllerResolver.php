@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Service;
 
-use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use WernerDweight\ApiAuthBundle\Controller\ApiAuthControllerInterface;
 use WernerDweight\RA\RA;
 
@@ -40,15 +39,16 @@ class TargetControllerResolver
     }
 
     /**
-     * @param ServiceSubscriberInterface $controller
+     * @param string $controllerPath
      *
      * @return bool
      */
-    public function isTargeted(ServiceSubscriberInterface $controller): bool
+    public function isTargeted(string $controllerPath): bool
     {
+        $controller = new \ReflectionClass(explode('::', $controllerPath)[0]);
         $configuration = $this->getConfiguration();
 
-        if ($controller instanceof ApiAuthControllerInterface) {
+        if ($controller->implementsInterface(ApiAuthControllerInterface::class)) {
             return true;
         }
 
@@ -60,7 +60,10 @@ class TargetControllerResolver
             $configuration->rewind();
             while (true === $configuration->valid()) {
                 $targetedClass = $configuration->current();
-                if ($controller instanceof $targetedClass) {
+                if ($controller->getName() === $targetedClass ||
+                    $controller->implementsInterface($targetedClass) ||
+                    $controller->isSubclassOf($targetedClass)
+                ) {
                     return true;
                 }
                 $configuration->next();

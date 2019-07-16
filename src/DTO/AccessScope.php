@@ -6,7 +6,7 @@ namespace WernerDweight\ApiAuthBundle\DTO;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\RA\RA;
 
-class AccessScope implements \JsonSerializable
+final class AccessScope implements \JsonSerializable
 {
     /** @var string */
     private const PATH_SEPARATOR = '.';

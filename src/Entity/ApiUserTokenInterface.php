@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Entity;
 
-use WernerDweight\ApiAuthBundle\DTO\AccessScope;
-
 interface ApiUserTokenInterface extends \JsonSerializable
 {
     /**
@@ -22,7 +20,7 @@ interface ApiUserTokenInterface extends \JsonSerializable
     /**
      * @param \DateTime $expirationDate
      *
-     * @return ApiUserInterface
+     * @return ApiUserTokenInterface
      */
     public function setExpirationDate(\DateTime $expirationDate): self;
 
@@ -33,7 +31,7 @@ interface ApiUserTokenInterface extends \JsonSerializable
 
     /**
      * @param ApiUserInterface $apiUser
-     * 
+     *
      * @return ApiUserTokenInterface
      */
     public function setApiUser(ApiUserInterface $apiUser): self;

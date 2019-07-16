@@ -24,7 +24,9 @@ class ApiUserCredentials
 
     /**
      * ApiUserCredentials constructor.
+     *
      * @param string $baseAuthorizationHeader
+     *
      * @throws \Safe\Exceptions\UrlException
      */
     public function __construct(string $baseAuthorizationHeader)

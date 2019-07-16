@@ -6,15 +6,11 @@ namespace WernerDweight\ApiAuthBundle\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use WernerDweight\ApiAuthBundle\DTO\ApiUserCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
-use WernerDweight\ApiAuthBundle\Entity\ApiUserTokenInterface;
 use WernerDweight\ApiAuthBundle\Event\ApiUserAuthenticatedEvent;
-use WernerDweight\ApiAuthBundle\Event\ApiUserTokenRefreshEvent;
-use WernerDweight\ApiAuthBundle\Exception\ApiUserAuthenticatorException;
 use WernerDweight\ApiAuthBundle\Security\ApiUserProvider;
 
 class ApiUserAuthenticator
@@ -38,10 +34,11 @@ class ApiUserAuthenticator
 
     /**
      * ApiUserAuthenticator constructor.
-     * @param ApiUserProvider $apiUserProvider
-     * @param EventDispatcherInterface $eventDispatcher
+     *
+     * @param ApiUserProvider        $apiUserProvider
+     * @param EventDispatcher        $eventDispatcher
      * @param EntityManagerInterface $entityManager
-     * @param ApiUserTokenFactory $apiUserTokenFactory
+     * @param ApiUserTokenFactory    $apiUserTokenFactory
      */
     public function __construct(
         ApiUserProvider $apiUserProvider,
@@ -54,15 +51,18 @@ class ApiUserAuthenticator
         $this->entityManager = $entityManager;
         $this->apiUserTokenFactory = $apiUserTokenFactory;
     }
-    
+
     /**
      * @param Request $request
+     *
      * @return ApiUserInterface
+     *
      * @throws \Safe\Exceptions\StringsException
      * @throws \Safe\Exceptions\UrlException
      */
     public function authenticate(Request $request): ApiUserInterface
     {
+        /** @var string|null $auth */
         $auth = $request->headers->get(self::AUTH_HEADER);
         if (null === $auth) {
             throw new BadCredentialsException(self::EXCEPTION_NO_AUTH);

@@ -25,6 +25,7 @@ use WernerDweight\ApiAuthBundle\Event\ApiClientCredentialsCheckedEvent;
 use WernerDweight\ApiAuthBundle\Event\ApiUserTokenCheckedEvent;
 use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\AccessScopeCheckerFactory;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
+use WernerDweight\ApiAuthBundle\Service\TargetControllerResolver;
 
 final class ApiClientAuthenticator implements AuthenticatorInterface
 {
@@ -38,15 +39,17 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
         'No user token present in headers! You must provide value for the header %s.';
     /** @var string */
     private const AUTH_ROUTE_NAME = 'wds_api_auth_authenticate';
+    /** @var string */
+    private const CONTROLLER_KEY = '_controller';
 
     /** @var string|null */
     private $apiUserToken;
 
-    /** @var ApiUserInterface|null */
-    private $apiUser;
-
     /** @var string */
     private $route;
+
+    /** @var ApiUserInterface|null */
+    private $apiUser;
 
     /** @var Security */
     private $security;
@@ -63,6 +66,9 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     /** @var ApiUserProvider */
     private $apiUserProvider;
 
+    /** @var TargetControllerResolver */
+    private $targetControllerResolver;
+
     /**
      * ApiClientAuthenticator constructor.
      *
@@ -71,19 +77,22 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      * @param ConfigurationProvider     $configurationProvider
      * @param AccessScopeCheckerFactory $accessScopeCheckerFactory
      * @param ApiUserProvider           $apiUserProvider
+     * @param TargetControllerResolver  $targetControllerResolver
      */
     public function __construct(
         Security $security,
         EventDispatcherInterface $eventDispatcher,
         ConfigurationProvider $configurationProvider,
         AccessScopeCheckerFactory $accessScopeCheckerFactory,
-        ApiUserProvider $apiUserProvider
+        ApiUserProvider $apiUserProvider,
+        TargetControllerResolver $targetControllerResolver
     ) {
         $this->security = $security;
         $this->eventDispatcher = $eventDispatcher;
         $this->configurationProvider = $configurationProvider;
         $this->accessScopeCheckerFactory = $accessScopeCheckerFactory;
         $this->apiUserProvider = $apiUserProvider;
+        $this->targetControllerResolver = $targetControllerResolver;
     }
 
     /**
@@ -106,6 +115,12 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     {
         if (null !== $this->security->getUser()) {
             // already authenticated (not a stateless api)
+            return false;
+        }
+
+        // check target controllers
+        $controller = $request->attributes->get(self::CONTROLLER_KEY);
+        if (true !== $this->targetControllerResolver->isTargeted($controller)) {
             return false;
         }
 
@@ -196,10 +211,13 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param ApiClientCredentials $credentials
-     * @param ApiClientInterface   $user
+     * @param mixed              $credentials
+     * @param ApiClientInterface $user
      *
      * @return bool
+     *
+     * @throws \Safe\Exceptions\StringsException
+     * @throws \WernerDweight\RA\Exception\RAException
      */
     public function checkCredentials($credentials, UserInterface $user): bool
     {
@@ -237,8 +255,8 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param ApiClientInterface $user
-     * @param string             $providerKey
+     * @param UserInterface $user
+     * @param string        $providerKey
      *
      * @return GuardTokenInterface
      */

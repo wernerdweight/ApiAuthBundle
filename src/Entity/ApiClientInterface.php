@@ -6,7 +6,7 @@ namespace WernerDweight\ApiAuthBundle\Entity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
-interface ApiClientInterface
+interface ApiClientInterface extends UserInterface
 {
     /**
      * @return string

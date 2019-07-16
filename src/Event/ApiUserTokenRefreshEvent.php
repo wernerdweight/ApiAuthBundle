@@ -19,6 +19,7 @@ class ApiUserTokenRefreshEvent extends Event
 
     /**
      * ApiUserTokenRefreshEvent constructor.
+     *
      * @param ApiUserInterface $apiUser
      */
     public function __construct(ApiUserInterface $apiUser)
