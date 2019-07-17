@@ -11,7 +11,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use WernerDweight\ApiAuthBundle\DTO\ApiUserCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 use WernerDweight\ApiAuthBundle\Event\ApiUserAuthenticatedEvent;
-use WernerDweight\ApiAuthBundle\Security\ApiUserProvider;
+use WernerDweight\ApiAuthBundle\Security\ApiUserLoader;
 
 class ApiUserAuthenticator
 {
@@ -20,8 +20,8 @@ class ApiUserAuthenticator
     /** @var string */
     private const EXCEPTION_NO_AUTH = 'No Authorization header is present in request!';
 
-    /** @var ApiUserProvider */
-    private $apiUserProvider;
+    /** @var ApiUserLoader */
+    private $apiUserLoader;
 
     /** @var EventDispatcher */
     private $eventDispatcher;
@@ -35,18 +35,18 @@ class ApiUserAuthenticator
     /**
      * ApiUserAuthenticator constructor.
      *
-     * @param ApiUserProvider        $apiUserProvider
+     * @param ApiUserLoader          $apiUserLoader
      * @param EventDispatcher        $eventDispatcher
      * @param EntityManagerInterface $entityManager
      * @param ApiUserTokenFactory    $apiUserTokenFactory
      */
     public function __construct(
-        ApiUserProvider $apiUserProvider,
+        ApiUserLoader $apiUserLoader,
         EventDispatcherInterface $eventDispatcher,
         EntityManagerInterface $entityManager,
         ApiUserTokenFactory $apiUserTokenFactory
     ) {
-        $this->apiUserProvider = $apiUserProvider;
+        $this->apiUserLoader = $apiUserLoader;
         $this->eventDispatcher = $eventDispatcher;
         $this->entityManager = $entityManager;
         $this->apiUserTokenFactory = $apiUserTokenFactory;
@@ -68,7 +68,7 @@ class ApiUserAuthenticator
             throw new BadCredentialsException(self::EXCEPTION_NO_AUTH);
         }
         $credentials = new ApiUserCredentials($auth);
-        $user = $this->apiUserProvider->loadImplicitUser($credentials);
+        $user = $this->apiUserLoader->loadByCredentials($credentials);
 
         $token = $this->apiUserTokenFactory->create($user);
         $user->addApiToken($token);

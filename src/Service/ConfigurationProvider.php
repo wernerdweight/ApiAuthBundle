@@ -54,6 +54,8 @@ class ConfigurationProvider
      * @param bool        $userUseScopeAccessModel
      * @param string      $userAccessScopeChecker
      * @param array       $targetControllers
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         string $clientClass,

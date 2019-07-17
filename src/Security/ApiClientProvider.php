@@ -18,38 +18,24 @@ use WernerDweight\RA\RA;
 
 final class ApiClientProvider implements UserProviderInterface
 {
-    /** @var string */
-    private const EXCEPTION_NOT_FOUND = 'There is no ApiClient for given client id!';
-    /** @var string */
-    private const EXCEPTION_UNSUPPORTED_USER =
-        '%s is not a supported authentication class. Make sure your class implements ApiClientInterface!';
+    /** @var ApiClientLoader */
+    private $apiClientLoader;
 
-    /** @var EntityManager */
-    private $entityManaager;
-
-    /** @var ConfigurationProvider */
-    private $configurationProvider;
+    /** @var ApiClientRefresher */
+    private $apiClientRefresher;
 
     /**
      * ApiUserProvider constructor.
      *
-     * @param EntityManager         $entityManager
-     * @param ConfigurationProvider $configurationProvider
+     * @param ApiClientLoader       $apiClientLoader
+     * @param ApiClientRefresher    $apiClientRefresher
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ConfigurationProvider $configurationProvider
+        ApiClientLoader $apiClientLoader,
+        ApiClientRefresher $apiClientRefresher
     ) {
-        $this->entityManaager = $entityManager;
-        $this->configurationProvider = $configurationProvider;
-    }
-
-    /**
-     * @return ObjectRepository
-     */
-    private function getRepository(): ObjectRepository
-    {
-        return $this->entityManaager->getRepository($this->configurationProvider->getClientClass());
+        $this->apiClientLoader = $apiClientLoader;
+        $this->apiClientRefresher = $apiClientRefresher;
     }
 
     /**
@@ -61,30 +47,7 @@ final class ApiClientProvider implements UserProviderInterface
      */
     public function loadUserByUsername($username): ApiClientInterface
     {
-        $repository = $this->getRepository();
-        $property = $this->configurationProvider->getClientProperty();
-        if (null !== $property) {
-            /** @var ApiClientInterface|null $apiClient */
-            $apiClient = $repository->findOneBy([$property => $username]);
-            if (null === $apiClient) {
-                throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
-            }
-            return $apiClient;
-        }
-
-        if ($repository instanceof UserLoaderInterface) {
-            /** @var ApiClientInterface|null $apiClient */
-            $apiClient = $repository->loadUserByUsername($username);
-            if (null === $apiClient) {
-                throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
-            }
-            return $apiClient;
-        }
-
-        throw new ApiClientProviderException(
-            ApiClientProviderException::EXCEPTION_UNABLE_TO_LOAD,
-            [get_class($repository)]
-        );
+        return $this->apiClientLoader->load($username);
     }
 
     /**
@@ -96,30 +59,7 @@ final class ApiClientProvider implements UserProviderInterface
      */
     public function refreshUser(UserInterface $user): ApiClientInterface
     {
-        if (!$user instanceof ApiClientInterface) {
-            throw new UnsupportedUserException(\Safe\sprintf(self::EXCEPTION_UNSUPPORTED_USER, get_class($user)));
-        }
-
-        $repository = $this->getRepository();
-        if ($repository instanceof UserProviderInterface) {
-            /** @var ApiClientInterface $apiClient */
-            $apiClient = $repository->refreshUser($user);
-            return $apiClient;
-        }
-
-        $id = $this->entityManaager
-            ->getClassMetadata($this->configurationProvider->getClientClass())
-            ->getIdentifierValues($user);
-        if (true === empty($id)) {
-            throw new ApiClientProviderException(ApiClientProviderException::EXCEPTION_NO_ID);
-        }
-
-        /** @var ApiClientInterface|null $apiClient */
-        $apiClient = $repository->find($id);
-        if (null === $apiClient) {
-            throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
-        }
-        return $apiClient;
+        return $this->apiClientRefresher->refresh($user);
     }
 
     /**

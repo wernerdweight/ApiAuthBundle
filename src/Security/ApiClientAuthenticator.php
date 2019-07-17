@@ -3,30 +3,21 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
-use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
-use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
-use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
-use WernerDweight\ApiAuthBundle\Event\ApiClientCredentialsCheckedEvent;
-use WernerDweight\ApiAuthBundle\Event\ApiUserTokenCheckedEvent;
-use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\AccessScopeCheckerFactory;
-use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
-use WernerDweight\ApiAuthBundle\Service\TargetControllerResolver;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 final class ApiClientAuthenticator implements AuthenticatorInterface
 {
     /** @var string */
@@ -34,65 +25,37 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     /** @var string */
     private const UNAUTHORIZED_MESSAGE =
         'Client id, secret or user api token are invalid, expired or not allowed access!';
-    /** @var string */
-    private const EXCEPTION_NO_USER_TOKEN =
-        'No user token present in headers! You must provide value for the header %s.';
-    /** @var string */
-    private const AUTH_ROUTE_NAME = 'wds_api_auth_authenticate';
-    /** @var string */
-    private const CONTROLLER_KEY = '_controller';
 
-    /** @var string|null */
-    private $apiUserToken;
+    /** @var ApiClientAuthenticatorRequestResolver */
+    private $apiClientAuthenticatorRequestResolver;
 
-    /** @var string */
-    private $route;
+    /** @var ApiClientCredentialsChecker */
+    private $apiClientCredentialsChecker;
 
-    /** @var ApiUserInterface|null */
-    private $apiUser;
+    /** @var ApiClientCredentialsFactory */
+    private $apiClientCredentialsFactory;
 
-    /** @var Security */
-    private $security;
-
-    /** @var EventDispatcher */
-    private $eventDispatcher;
-
-    /** @var ConfigurationProvider */
-    private $configurationProvider;
-
-    /** @var AccessScopeCheckerFactory */
-    private $accessScopeCheckerFactory;
-
-    /** @var ApiUserProvider */
-    private $apiUserProvider;
-
-    /** @var TargetControllerResolver */
-    private $targetControllerResolver;
+    /** @var ApiClientAuthenticatedTokenFactory */
+    private $apiClientAuthenticatedTokenFactory;
 
     /**
      * ApiClientAuthenticator constructor.
      *
-     * @param Security                  $security
-     * @param EventDispatcher           $eventDispatcher
-     * @param ConfigurationProvider     $configurationProvider
-     * @param AccessScopeCheckerFactory $accessScopeCheckerFactory
-     * @param ApiUserProvider           $apiUserProvider
-     * @param TargetControllerResolver  $targetControllerResolver
+     * @param ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver
+     * @param ApiClientCredentialsChecker           $apiClientCredentialsChecker
+     * @param ApiClientCredentialsFactory           $apiClientCredentialsFactory
+     * @param ApiClientAuthenticatedTokenFactory    $apiClientAuthenticatedTokenFactory
      */
     public function __construct(
-        Security $security,
-        EventDispatcherInterface $eventDispatcher,
-        ConfigurationProvider $configurationProvider,
-        AccessScopeCheckerFactory $accessScopeCheckerFactory,
-        ApiUserProvider $apiUserProvider,
-        TargetControllerResolver $targetControllerResolver
+        ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver,
+        ApiClientCredentialsChecker $apiClientCredentialsChecker,
+        ApiClientCredentialsFactory $apiClientCredentialsFactory,
+        ApiClientAuthenticatedTokenFactory $apiClientAuthenticatedTokenFactory
     ) {
-        $this->security = $security;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->configurationProvider = $configurationProvider;
-        $this->accessScopeCheckerFactory = $accessScopeCheckerFactory;
-        $this->apiUserProvider = $apiUserProvider;
-        $this->targetControllerResolver = $targetControllerResolver;
+        $this->apiClientAuthenticatorRequestResolver = $apiClientAuthenticatorRequestResolver;
+        $this->apiClientCredentialsChecker = $apiClientCredentialsChecker;
+        $this->apiClientCredentialsFactory = $apiClientCredentialsFactory;
+        $this->apiClientAuthenticatedTokenFactory = $apiClientAuthenticatedTokenFactory;
     }
 
     /**
@@ -100,6 +63,8 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      * @param AuthenticationException|null $authException
      *
      * @return JsonResponse
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function start(Request $request, ?AuthenticationException $authException = null): JsonResponse
     {
@@ -113,33 +78,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function supports(Request $request): bool
     {
-        if (null !== $this->security->getUser()) {
-            // already authenticated (not a stateless api)
-            return false;
-        }
-
-        // check target controllers
-        $controller = $request->attributes->get(self::CONTROLLER_KEY);
-        if (true !== $this->targetControllerResolver->isTargeted($controller)) {
-            return false;
-        }
-
-        $headers = $request->headers;
-        if (true !== $headers->has(ApiAuthEnum::CLIENT_ID_HEADER) ||
-            true !== $headers->has(ApiAuthEnum::CLIENT_SECRET_HEADER)
-        ) {
-            return false;
-        }
-
-        $this->route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
-
-        if ($headers->has(ApiAuthEnum::API_USER_TOKEN_HEADER)) {
-            /** @var string $token */
-            $token = $headers->get(ApiAuthEnum::API_USER_TOKEN_HEADER);
-            $this->apiUserToken = $token;
-        }
-
-        return true;
+        return $this->apiClientAuthenticatorRequestResolver->supports($request);
     }
 
     /**
@@ -149,12 +88,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function getCredentials(Request $request): ApiClientCredentials
     {
-        $headers = $request->headers;
-        /** @var string $clientId */
-        $clientId = $headers->get(ApiAuthEnum::CLIENT_ID_HEADER);
-        /** @var string $clientSecret */
-        $clientSecret = $headers->get(ApiAuthEnum::CLIENT_SECRET_HEADER);
-        return new ApiClientCredentials($clientId, $clientSecret);
+        return $this->apiClientCredentialsFactory->create($request);
     }
 
     /**
@@ -171,46 +105,6 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @return bool
-     *
-     * @throws \Safe\Exceptions\StringsException
-     * @throws \WernerDweight\RA\Exception\RAException
-     */
-    private function checkUserApiToken(): bool
-    {
-        if (null === $this->apiUserToken) {
-            throw new UnauthorizedHttpException(
-                ApiAuthEnum::REALM,
-                \Safe\sprintf(self::EXCEPTION_NO_USER_TOKEN, ApiAuthEnum::API_USER_TOKEN_HEADER)
-            );
-        }
-
-        // authenticate user by api token
-        $apiUser = $this->apiUserProvider->loadUserByUsername($this->apiUserToken);
-
-        // check api user scope
-        if (true === $this->configurationProvider->getUserUseScopeAccessModel()) {
-            $scopeAccessibility = $this->accessScopeCheckerFactory
-                ->get($this->configurationProvider->getUserAccessScopeChecker())
-                ->check($apiUser->getUserScope());
-            if (ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN === $scopeAccessibility) {
-                return false;
-            }
-        }
-
-        // set the user as current user (instead of client)
-        $this->apiUser = $apiUser;
-
-        /** @var ApiUserTokenCheckedEvent $event */
-        $event = $this->eventDispatcher->dispatch(new ApiUserTokenCheckedEvent($this->apiUserToken, $this->apiUser));
-        if (true !== $event->isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * @param mixed              $credentials
      * @param ApiClientInterface $user
      *
@@ -221,37 +115,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function checkCredentials($credentials, UserInterface $user): bool
     {
-        if ($user->getClientSecret() !== $credentials->getClientSecret()) {
-            return false;
-        }
-
-        // no more checks for login action
-        if (self::AUTH_ROUTE_NAME === $this->route) {
-            return true;
-        }
-
-        // check api client scope
-        $scopeAccessibility = ApiAuthEnum::SCOPE_ACCESSIBILITY_ACCESSIBLE;
-        if (true === $this->configurationProvider->getClientUseScopeAccessModel()) {
-            $scopeAccessibility = $this->accessScopeCheckerFactory
-                ->get($this->configurationProvider->getClientAccessScopeChecker())
-                ->check($user->getClientScope());
-            if (ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN === $scopeAccessibility) {
-                return false;
-            }
-        }
-
-        /** @var ApiClientCredentialsCheckedEvent $event */
-        $event = $this->eventDispatcher->dispatch(new ApiClientCredentialsCheckedEvent($credentials, $user));
-        if (true !== $event->isValid()) {
-            return false;
-        }
-
-        if (ApiAuthEnum::SCOPE_ACCESSIBILITY_ON_BEHALF === $scopeAccessibility) {
-            return $this->checkUserApiToken();
-        }
-
-        return true;
+        return $this->apiClientCredentialsChecker->check($credentials, $user);
     }
 
     /**
@@ -262,9 +126,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function createAuthenticatedToken(UserInterface $user, $providerKey): GuardTokenInterface
     {
-        /** @var string[] $roles */
-        $roles = $user->getRoles();
-        return new PostAuthenticationGuardToken($user, $providerKey, $roles);
+        return $this->apiClientAuthenticatedTokenFactory->create($user, $providerKey);
     }
 
     /**
@@ -272,6 +134,8 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      * @param AuthenticationException $exception
      *
      * @return JsonResponse
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
@@ -284,6 +148,8 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      * @param string         $providerKey
      *
      * @return Response|null
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
