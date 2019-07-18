@@ -14,6 +14,8 @@ final class Configuration implements ConfigurationInterface
     private const DEFAULT_LOGIN_PROPERTY = 'username';
     /** @var int */
     private const DEFAULT_API_TOKEN_EXPIRATION_INTERVAL = 2592000;  // 30 days in seconds
+    /** @var string */
+    private const DEFAULT_CLIENT_PROPERTY = 'clientId';
 
     /**
      * @return TreeBuilder
@@ -43,7 +45,7 @@ final class Configuration implements ConfigurationInterface
                             ->isRequired()
                         ->end()
                         ->scalarNode('property')
-                            ->defaultNull()
+                            ->defaultValue(self::DEFAULT_CLIENT_PROPERTY)
                         ->end()
                         ->booleanNode('use_scope_access_model')
                             ->defaultFalse()

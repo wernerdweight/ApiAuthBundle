@@ -43,8 +43,8 @@ api_auth:
     client:
         # your entity that implements ApiClientInterface
         class: App\Entity\ApiClient
-        # property of the entity that is used as client id
-        # you may also make your ApiClientRepository extend UserLoaderInterface and ommit the property setting
+        # property of the entity that is used as client id - defaults to `clientId`
+        # you may also make your ApiClientRepository extend UserLoaderInterface and null the property setting
         property: clientId
         # if set to true, client scope will be checked before granting access (see `scope access` below) - deafult false
         use_scope_access_model: true
@@ -118,87 +118,277 @@ security:
 
 ### ApiClient
 
-Create an entity that implements ApiClientInterface:
+You need to create an entity that implements ApiClientInterface. The easiest option is to extend the existing AbstractApiClient entity like so:
 
 ```php
-use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
+<?php
+namespace App\Entity;
 
-class ApiClient implements ApiClientInterface
+use Doctrine\ORM\Mapping as ORM;
+use WernerDweight\ApiAuthBundle\Entity\AbstractApiClient;
+
+/**
+ * @ORM\Entity(repositoryClass="App\Repository\ApiClientRepository")
+ */
+class ApiClient extends AbstractApiClient
 {
-    // this trait solves the extension of UserInterface
-    // (which is required by symfony authentication process, but not necessary for the ApiClient as such)
-    use ApiClientTrait;
-    
-    /**
-     * Please implement the following methods by yourself.
-     * You will need to store the data in some fields and ApiAuthBundle doesn't want to force you to use exact field names and mappings.
-     */
-
-    public function getClientId(): string
-    {
-        ...
-    }
-
-    public function getClientSecret(): string
-    {
-        ...
-    }
-
-    public function getClientScope(): AccessScope
-    {
-        return new AccessScope($this->clientScope);
-    }
+    /* put your custom fields and methods here */
 }
 ```
+
+You can also directly implement the `WernerDweight\ApiAuthBundle\Entity\ApiClientInterface` if you want to avoid inheritance.
 
 ### ApiUser
 
-**OPTIONAL:** If you want to restrict certain actions within your API to certain users ("on behalf" access mode), create an entity that implements ApiUserInterface and also create a UserProvider:
+**OPTIONAL:** If you want to restrict certain actions within your API to certain users (see 'on behalf' access mode below), create an entity that implements ApiUserInterface and another one that implements ApiUserTokenInterface. The easiest option is to extend AbstractApiUser and AbstractApiUserToken entities like so:
 
 ```php
-use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
+<?php
+namespace App\Entity;
 
-class ApiUser implements ApiUserInterface
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
+use Symfony\Component\Security\Core\User\UserInterface;
+use WernerDweight\ApiAuthBundle\Entity\AbstractApiUser;
+
+/**
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ */
+final class User extends AbstractApiUser implements UserInterface
 {
-    public function setApiToken(string $apiToken): ApiUserInterface
-    {
-        ...
-    }
+    /* put your custom fields here */
+
+    /**
+     * @var ArrayCollection|PersistentCollection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\UserToken", mappedBy="apiUser")
+     */
+    protected $apiTokens;
     
-    public function getApiToken(): string
+    /* put your custom methods here */
+    /* FYI: AbstractApiUser already has getter, adder and remover for `$apiTokens` */
+}
+```
+
+```php
+<?php
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use WernerDweight\ApiAuthBundle\Entity\AbstractApiUserToken;
+
+/**
+ * @ORM\Entity(repositoryClass="App\Repository\UserTokenRepository")
+ */
+class UserToken extends AbstractApiUserToken
+{
+    /* put your custom fields here */
+
+    /**
+     * @var User
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="apiTokens")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, onDelete="CASCADE")
+     * })
+     */
+    protected $apiUser;
+
+    /* put your custom methods here */
+    /* FYI: AbstractApiUserToken already has getter adn setter for `$apiUser` */
+}
+```
+
+**WARNING:** If you implement custom UserRepository (doctrine entity repository for your entity that implements ApiUserInterface), you must extend `AbstractApiUserRepository` or implement `ApiUserRepositoryInterface`!
+
+```php
+<?php
+namespace App\Repository;
+
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\RegistryInterface;
+use WernerDweight\ApiAuthBundle\Repository\AbstractApiUserRepository;
+
+class UserRepository extends AbstractApiUserRepository
+{
+    public function __construct(RegistryInterface $registry)
     {
-        ...
-    }
-    
-    public function setApiTokenExpirationDate(\DateTime $apiTokenExpirationDate): ApiUserInterface
-    {
-        ...
-    }
-    
-    public function getApiTokenExpirationDate(): ?\DateTime
-    {
-        ...
-    }
-    
-    public function getUserScope(): AccessScope
-    {
-        return new AccessScope($this->userScope);
+        parent::__construct($registry, User::class);
     }
 }
 ```
-TODO: repository (extends AbstractApiUserRepository)
-TODO: provider
 
 Usage
 ------------
 
-TODO: scope access (incl. checkers - tag to imoplement your own)
-TODO: on-behalf access mode
+### General usage
+
+You simply have to include respective client id and secret in requests that require authentication.
+
+```http request
+GET /your/api/path/ HTTP/1.1
+X-Client-Id: some-client-id
+X-Client-Secret: some-client-secret
+Host: your-api-host.com
+```
+
+### Scope access
+
+You can optionally enable scope checking (via `api_auth.client.use_scope_access_model` or `api_auth.user.use_scope_access_model` configuration settings).
+
+If enabled, the authenticator will also (apart from api credentials) check the defined client/user scope using configured checker (if no checker is explicitly configured (`api_auth.client.access_scope_checker` or `api_auth.user.access_scope_checker`) the default `RouteChecker` is used). This way, different ApiClients/Users can have different privileges.
+
+The scope is generally a JSON column on ApiClient/ApiUser entities. You can store any information in that column and then use any checker you want to read and evaluate the stored information.
+
+The default RouteChecker expects a structure like this:
+
+```json5
+{
+  "route_name": true,
+  // following line is a no-op, the route doesn't have to be specified if it should not be accessible
+  "another_route_name": false,
+  // see `on-behalf` access mode below
+  "yet_another_route_name": 'on-behalf',
+}
+```
+
+ApiAuthBundle also by default includes a checker for [DoctrineCrudApiBundle](https://github.com/wernerdweight/DoctrineCrudApiBundle), that expects this structure:
+```json5
+{
+  "entityName": {
+    "list": true,
+    "length": false,
+    "detail": "on-behalf"
+  },
+  "anotherEntityName": {
+    "list": true,
+    "detail": "on-behalf"
+  }
+}
+```
+
+You can also implement custom checker (don't forget to tag your checker with `api_auth.access_scope_checker`):
+
+```yaml
+# config/packages/api_auth.yaml
+api_auth:
+    client:
+        # ...
+        use_scope_access_model: true
+        access_scope_checker: App\Service\MyAccessScopeChecker
+```
+
+```php
+<?php
+namespace App\Service;
+
+use WernerDweight\ApiAuthBundle\DTO\AccessScope;
+use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\Checker\AccessScopeCheckerInterface;
+
+final class MyAccessScopeChecker implements AccessScopeCheckerInterface
+{
+    public function check(AccessScope $scope): string
+    {
+        if (/* ... */) {
+            return ApiAuthEnum::SCOPE_ACCESSIBILITY_ACCESSIBLE;
+        }
+        
+        if (/* ... */) {
+            return ApiAuthEnum::SCOPE_ACCESSIBILITY_ON_BEHALF;
+        }
+        
+        return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
+    }
+}
+```
+
+```yaml
+# services.yaml
+App\Service\MyAccessScopeChecker:
+    tags:
+        - { name: 'api_auth.access_scope_checker' }
+```
+
+
+### on-behalf access mode
+
+If the ApiClient/ApiUser scope is configured to be checked (see above) and the `'on-behalf'` value is set in the scope, another authentication is required.
+
+The request must then contain the `X-Api-User-Token` header with a valid token. To obtain the token, the user must login using Basic Auth - the request should look as follows:
+
+```http request
+POST /authenticate/ HTTP/1.1
+X-Client-Id: some-client-id
+X-Client-Secret: some-client-secret
+Authorization: Basic encodedBasicAuthInformation==
+Host: your-api-host.com
+```
+
+The response contains the token and scope (and optionally any other information returned from your user entity via json serialization):
+
+```json
+{
+  "token": {
+    "token": "aBc37De4FgH_-abC08d7eF",
+    "expirationDate": "2019-08-15T22:06:08+02:00"
+  },
+  "userScope": {
+    "someRoute": true,
+    "someOtherRoute": "on-behalf"
+  }
+}
+```
+
+**WARNING:** If you overload the default `jsonSerialize` method, don't forget to include the parent return value:
+
+```php
+<?php
+
+final class User extends AbstractApiUser implements UserInterface
+{
+    /* ... */
+    
+    public function jsonSerialize(): array
+    {
+        return array_merge(
+            [
+                'id' => $this->getId(),
+                'email' => $this->getEmail(),
+                // any other attributes you need to include in the response
+            ],
+            parent::jsonSerialize()
+        );
+    }
+}
+```
+
+You can then use the obtained token in requests that require the `'ob-behalf'` access mode like this:
+
+```http request
+GET /your/api/path HTTP/1.1
+X-Client-Id: some-client-id
+X-Client-Secret: some-client-secret
+X-Api-User-Token: aBc37De4FgH_-abC08d7eF
+Host: your-api-host.com
+```
+
+**FYI:** The `'on-behalf'` value only makes sense for client scope. If you set `'on-behalf'` as value inside the user scope, the value is interpreted in the same way as `true`.
 
 ### Events
 
 The following events are dispatched, so you can hook in the process. For general info on how to use events, please consult the [official Symfony documentation](https://symfony.com/doc/current/event_dispatcher.html).
 
+**ApiClientCredentialsCheckedEvent (`wds.api_auth_bundle.api_client_credentials_checked`)** \
+Issued after the client credentials have been checked. Contains the client and credentials being checked. You can call `setValid` on the event to change the check result.
+
+**ApiUserAuthenticatedEvent (`wds.api_auth_bundle.api_user_authenticated`)** \
+Issued after the user has been authenticated using the `authenticate` endpoint. Contains the authenticated user.
+
+**ApiUserTokenCheckedEvent (`wds.api_auth_bundle.api_user_token_checked`)** \
+Issued after the `'on-behalf'` token check. Contains the user and token being checked. You can call `setValid` on the event to change the check result.
+
+**ApiUserTokenRefreshEvent (`wds.api_auth_bundle.api_user_token_refresh`)** \
 TODO:
 
 License
