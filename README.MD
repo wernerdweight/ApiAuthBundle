@@ -389,7 +389,7 @@ Issued after the user has been authenticated using the `authenticate` endpoint. 
 Issued after the `'on-behalf'` token check. Contains the user and token being checked. You can call `setValid` on the event to change the check result.
 
 **ApiUserTokenRefreshEvent (`wds.api_auth_bundle.api_user_token_refresh`)** \
-TODO:
+Issued during the `'on-behalf'` token is generated. Contains the user and generated token. You can call `setToken` on the event to change the token.
 
 License
 -------
