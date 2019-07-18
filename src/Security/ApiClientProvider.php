@@ -3,17 +3,9 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
-use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
-use WernerDweight\ApiAuthBundle\Exception\ApiClientProviderException;
-use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 use WernerDweight\RA\RA;
 
 final class ApiClientProvider implements UserProviderInterface
@@ -27,8 +19,8 @@ final class ApiClientProvider implements UserProviderInterface
     /**
      * ApiUserProvider constructor.
      *
-     * @param ApiClientLoader       $apiClientLoader
-     * @param ApiClientRefresher    $apiClientRefresher
+     * @param ApiClientLoader    $apiClientLoader
+     * @param ApiClientRefresher $apiClientRefresher
      */
     public function __construct(
         ApiClientLoader $apiClientLoader,
