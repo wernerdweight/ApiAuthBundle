@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Service;
 
+use ReflectionClass;
 use WernerDweight\ApiAuthBundle\Controller\ApiAuthControllerInterface;
 use WernerDweight\RA\RA;
 
@@ -45,7 +46,7 @@ class TargetControllerResolver
      */
     public function isTargeted(string $controllerPath): bool
     {
-        $controller = new \ReflectionClass(explode('::', $controllerPath)[0]);
+        $controller = new ReflectionClass(explode('::', $controllerPath)[0]);
         $configuration = $this->getConfiguration();
 
         if ($controller->implementsInterface(ApiAuthControllerInterface::class)) {

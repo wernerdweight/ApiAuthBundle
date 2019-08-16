@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
+use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\AccessScopeCheckerFactory;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
@@ -22,6 +23,9 @@ class ApiUserTokenChecker
     /** @var ApiUserProvider */
     private $apiUserProvider;
 
+    /** @var ApiUserInterface|null */
+    private $apiUser;
+
     /**
      * ApiClientAuthenticator constructor.
      *
@@ -40,6 +44,14 @@ class ApiUserTokenChecker
         $this->configurationProvider = $configurationProvider;
         $this->accessScopeCheckerFactory = $accessScopeCheckerFactory;
         $this->apiUserProvider = $apiUserProvider;
+    }
+
+    /**
+     * @return ApiUserInterface|null
+     */
+    public function getCheckedApiUser(): ?ApiUserInterface
+    {
+        return $this->apiUser;
     }
 
     /**
@@ -68,6 +80,7 @@ class ApiUserTokenChecker
             return false;
         }
 
+        $this->apiUser = $apiUser;
         return true;
     }
 }

@@ -1,15 +1,9 @@
 <?php
 declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: jannovotny
- * Date: 2019-07-15
- * Time: 10:14.
- */
-
 namespace WernerDweight\ApiAuthBundle\Service;
 
+use DateTime;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
@@ -96,7 +90,7 @@ class ApiUserTokenFactory
         $token
             ->setToken($this->generateToken($user))
             ->setExpirationDate(
-                new \DateTime(
+                new DateTime(
                     \Safe\sprintf(
                         '+%d seconds',
                         $this->configurationProvider->getUserApiTokenExpirationInterval()
