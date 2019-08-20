@@ -8,6 +8,10 @@
         name="WernerDweight\ApiAuthBundle\Entity\AbstractApiUser"
         repository-class="WernerDweight\ApiAuthBundle\Repository\AbstractApiUserRepository"
     >
-        <field name="userScope" type="json" nullable="false" />
+        <field name="userScope" type="json" nullable="false">
+            <options>
+                <option name="jsonb">true</option>
+            </options>
+        </field>
     </mapped-superclass>
 </doctrine-mapping>

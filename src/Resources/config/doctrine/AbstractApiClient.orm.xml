@@ -7,6 +7,10 @@
     <mapped-superclass name="WernerDweight\ApiAuthBundle\Entity\AbstractApiClient">
         <field name="clientId" type="string" nullable="false" />
         <field name="clientSecret" type="string" nullable="false" />
-        <field name="clientScope" type="json" nullable="false" />
+        <field name="clientScope" type="json" nullable="false">
+            <options>
+                <option name="jsonb">true</option>
+            </options>
+        </field>
     </mapped-superclass>
 </doctrine-mapping>
