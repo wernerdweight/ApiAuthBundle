@@ -6,10 +6,10 @@ namespace WernerDweight\ApiAuthBundle\Entity;
 abstract class AbstractApiUserToken implements ApiUserTokenInterface
 {
     /** @var string */
-    private $token;
+    protected $token;
 
     /** @var \DateTime */
-    private $expirationDate;
+    protected $expirationDate;
 
     /** @var ApiUserInterface */
     protected $apiUser;

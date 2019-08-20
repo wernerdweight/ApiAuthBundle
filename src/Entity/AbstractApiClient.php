@@ -8,13 +8,13 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 abstract class AbstractApiClient implements ApiClientInterface
 {
     /** @var string */
-    private $clientId;
+    protected $clientId;
 
     /** @var string */
-    private $clientSecret;
+    protected $clientSecret;
 
     /** @var array */
-    private $clientScope = [];
+    protected $clientScope = [];
 
     /**
      * @return string

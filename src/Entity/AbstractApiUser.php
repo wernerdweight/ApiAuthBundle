@@ -11,10 +11,10 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 abstract class AbstractApiUser implements ApiUserInterface
 {
     /** @var array */
-    private $userScope = [];
+    protected $userScope = [];
 
     /** @var ApiUserTokenInterface|null */
-    private $currentToken;
+    protected $currentToken;
 
     /** @var ArrayCollection|PersistentCollection */
     protected $apiTokens;
