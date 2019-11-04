@@ -20,7 +20,7 @@
         "php": ">=7.2.0",
         "symfony/framework-bundle": "^4.0",
         "thecodingmachine/safe": "^0.1.13",
-        "wernerdweight/ra": "^0.3.3",
+        "wernerdweight/ra": "^1.0",
         "wernerdweight/enhanced-exception": "^1.0",
         "symfony/security-bundle": "^4.3",
         "symfony/orm-pack": "^1.0",
