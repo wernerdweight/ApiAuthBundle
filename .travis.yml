@@ -7,8 +7,9 @@ php:
 
 script:
   - composer install --ignore-platform-reqs
+  - composer victor show
+  - composer update
   - composer phpstan
   - composer ecs
   - composer phpmd
   - composer phpunit
-  - composer victor show
