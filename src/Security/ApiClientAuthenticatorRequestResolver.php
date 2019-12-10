@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace WernerDweight\ApiAuthBundle\Security;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Security;
 use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
@@ -23,9 +22,6 @@ class ApiClientAuthenticatorRequestResolver
     /** @var string */
     private $route;
 
-    /** @var Security */
-    private $security;
-
     /** @var TargetControllerResolver */
     private $targetControllerResolver;
 
@@ -38,18 +34,15 @@ class ApiClientAuthenticatorRequestResolver
     /**
      * ApiClientAuthenticatorRequestResolver constructor.
      *
-     * @param Security                    $security
      * @param TargetControllerResolver    $targetControllerResolver
      * @param ConfigurationProvider       $configurationProvider
      * @param ApiClientCredentialsFactory $apiClientCredentialsFactory
      */
     public function __construct(
-        Security $security,
         TargetControllerResolver $targetControllerResolver,
         ConfigurationProvider $configurationProvider,
         ApiClientCredentialsFactory $apiClientCredentialsFactory
     ) {
-        $this->security = $security;
         $this->targetControllerResolver = $targetControllerResolver;
         $this->configurationProvider = $configurationProvider;
         $this->apiClientCredentialsFactory = $apiClientCredentialsFactory;
