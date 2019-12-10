@@ -73,6 +73,10 @@ api_auth:
         - '*'   # all controllers or list specific controllers (see next line)
         - 'My\Controller\SomeInterface'
         - 'Vendor\Bundle\Controller\SomeOtherInterface'
+
+    # if true, requests using the OPTIONS method will be ignored (authentication will be skipped)
+    # default false
+    exclude_options_requests: true
 ```
 
 ### Target controllers

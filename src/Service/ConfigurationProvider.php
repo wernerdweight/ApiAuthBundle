@@ -37,6 +37,9 @@ class ConfigurationProvider
     /** @var string */
     private $userAccessScopeChecker;
 
+    /** @var bool */
+    private $excludeOptionsRequests;
+
     /** @var RA */
     private $targetControllers;
 
@@ -68,7 +71,8 @@ class ConfigurationProvider
         int $userApiTokenExpirationInterval,
         bool $userUseScopeAccessModel,
         string $userAccessScopeChecker,
-        array $targetControllers
+        array $targetControllers,
+        bool $excludeOptionsRequests
     ) {
         $this->clientClass = $clientClass;
         $this->clientProperty = $clientProperty;
@@ -81,6 +85,7 @@ class ConfigurationProvider
         $this->userUseScopeAccessModel = $userUseScopeAccessModel;
         $this->userAccessScopeChecker = $userAccessScopeChecker;
         $this->targetControllers = new RA($targetControllers);
+        $this->excludeOptionsRequests = $excludeOptionsRequests;
     }
 
     /**
@@ -169,5 +174,13 @@ class ConfigurationProvider
     public function getTargetControllers(): RA
     {
         return $this->targetControllers;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getExcludeOptionsRequests(): bool
+    {
+        return $this->excludeOptionsRequests;
     }
 }

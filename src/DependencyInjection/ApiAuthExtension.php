@@ -65,6 +65,10 @@ class ApiAuthExtension extends Extension
             'api_auth.target_controllers',
             $config['target_controllers'] ?? []
         );
+        $container->setParameter(
+            'api_auth.exclude_options_requests',
+            $config['exclude_options_requests']
+        );
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');

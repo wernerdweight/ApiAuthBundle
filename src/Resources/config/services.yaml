@@ -21,6 +21,7 @@ services:
             $userUseScopeAccessModel: '%api_auth.user.use_scope_access_model%'
             $userAccessScopeChecker: '%api_auth.user.access_scope_checker%'
             $targetControllers: '%api_auth.target_controllers%'
+            $excludeOptionsRequests: '%api_auth.exclude_options_requests%'
 
     WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\Checker\:
         resource: '../../Service/AccessScopeChecker/Checker/*'

@@ -82,6 +82,9 @@ final class Configuration implements ConfigurationInterface
                     ->scalarPrototype()
                     ->end()
                 ->end()
+                ->booleanNode('exclude_options_requests')
+                    ->defaultFalse()
+                ->end()
             ->end()
         ;
     }

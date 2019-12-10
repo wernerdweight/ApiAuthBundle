@@ -5,13 +5,17 @@ namespace WernerDweight\ApiAuthBundle\Security;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
+use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
 use WernerDweight\ApiAuthBundle\Enum\ApiAuthEnum;
+use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 use WernerDweight\ApiAuthBundle\Service\TargetControllerResolver;
 
 class ApiClientAuthenticatorRequestResolver
 {
     /** @var string */
     private const CONTROLLER_KEY = '_controller';
+    /** @var string */
+    private const NO_AUTH = '';
 
     /** @var string|null */
     private $apiUserToken;
@@ -25,18 +29,30 @@ class ApiClientAuthenticatorRequestResolver
     /** @var TargetControllerResolver */
     private $targetControllerResolver;
 
+    /** @var ConfigurationProvider */
+    private $configurationProvider;
+
+    /** @var ApiClientCredentialsFactory */
+    private $apiClientCredentialsFactory;
+
     /**
-     * ApiClientAuthenticator constructor.
+     * ApiClientAuthenticatorRequestResolver constructor.
      *
-     * @param Security                 $security
-     * @param TargetControllerResolver $targetControllerResolver
+     * @param Security                    $security
+     * @param TargetControllerResolver    $targetControllerResolver
+     * @param ConfigurationProvider       $configurationProvider
+     * @param ApiClientCredentialsFactory $apiClientCredentialsFactory
      */
     public function __construct(
         Security $security,
-        TargetControllerResolver $targetControllerResolver
+        TargetControllerResolver $targetControllerResolver,
+        ConfigurationProvider $configurationProvider,
+        ApiClientCredentialsFactory $apiClientCredentialsFactory
     ) {
         $this->security = $security;
         $this->targetControllerResolver = $targetControllerResolver;
+        $this->configurationProvider = $configurationProvider;
+        $this->apiClientCredentialsFactory = $apiClientCredentialsFactory;
     }
 
     /**
@@ -46,25 +62,35 @@ class ApiClientAuthenticatorRequestResolver
      */
     public function supports(Request $request): bool
     {
-        if (null !== $this->security->getUser()) {
-            // already authenticated (not a stateless api)
-            return false;
-        }
-
         // check target controllers
         $controller = $request->attributes->get(self::CONTROLLER_KEY);
         if (true !== $this->targetControllerResolver->isTargeted($controller)) {
             return false;
         }
 
-        $headers = $request->headers;
-        if (true !== $headers->has(ApiAuthEnum::CLIENT_ID_HEADER) ||
-            true !== $headers->has(ApiAuthEnum::CLIENT_SECRET_HEADER)
-        ) {
+        if (true === $this->configurationProvider->getExcludeOptionsRequests() &&
+            Request::METHOD_OPTIONS === $request->getMethod()) {
             return false;
         }
 
+        return true;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return ApiClientCredentials
+     */
+    public function getCredentials(Request $request): ApiClientCredentials
+    {
         $this->route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+
+        $headers = $request->headers;
+
+        /** @var string $clientId */
+        $clientId = $headers->get(ApiAuthEnum::CLIENT_ID_HEADER, self::NO_AUTH);
+        /** @var string $clientSecret */
+        $clientSecret = $headers->get(ApiAuthEnum::CLIENT_SECRET_HEADER, self::NO_AUTH);
 
         if ($headers->has(ApiAuthEnum::API_USER_TOKEN_HEADER)) {
             /** @var string $token */
@@ -72,7 +98,7 @@ class ApiClientAuthenticatorRequestResolver
             $this->apiUserToken = $token;
         }
 
-        return true;
+        return $this->apiClientCredentialsFactory->create($clientId, $clientSecret);
     }
 
     /**

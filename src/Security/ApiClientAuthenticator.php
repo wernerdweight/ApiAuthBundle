@@ -32,9 +32,6 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     /** @var ApiClientCredentialsChecker */
     private $apiClientCredentialsChecker;
 
-    /** @var ApiClientCredentialsFactory */
-    private $apiClientCredentialsFactory;
-
     /** @var ApiClientAuthenticatedTokenFactory */
     private $apiClientAuthenticatedTokenFactory;
 
@@ -43,18 +40,15 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      *
      * @param ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver
      * @param ApiClientCredentialsChecker           $apiClientCredentialsChecker
-     * @param ApiClientCredentialsFactory           $apiClientCredentialsFactory
      * @param ApiClientAuthenticatedTokenFactory    $apiClientAuthenticatedTokenFactory
      */
     public function __construct(
         ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver,
         ApiClientCredentialsChecker $apiClientCredentialsChecker,
-        ApiClientCredentialsFactory $apiClientCredentialsFactory,
         ApiClientAuthenticatedTokenFactory $apiClientAuthenticatedTokenFactory
     ) {
         $this->apiClientAuthenticatorRequestResolver = $apiClientAuthenticatorRequestResolver;
         $this->apiClientCredentialsChecker = $apiClientCredentialsChecker;
-        $this->apiClientCredentialsFactory = $apiClientCredentialsFactory;
         $this->apiClientAuthenticatedTokenFactory = $apiClientAuthenticatedTokenFactory;
     }
 
@@ -88,7 +82,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function getCredentials(Request $request): ApiClientCredentials
     {
-        return $this->apiClientCredentialsFactory->create($request);
+        return $this->apiClientAuthenticatorRequestResolver->getCredentials($request);
     }
 
     /**
