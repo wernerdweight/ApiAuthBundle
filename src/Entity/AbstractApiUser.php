@@ -10,13 +10,13 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
 abstract class AbstractApiUser implements ApiUserInterface
 {
-    /** @var array */
+    /** @var mixed[] */
     protected $userScope = [];
 
     /** @var ApiUserTokenInterface|null */
     protected $currentToken;
 
-    /** @var ArrayCollection|PersistentCollection */
+    /** @var ArrayCollection<int, ApiUserTokenInterface>|PersistentCollection<int, ApiUserTokenInterface> */
     protected $apiTokens;
 
     /**
@@ -28,7 +28,7 @@ abstract class AbstractApiUser implements ApiUserInterface
     }
 
     /**
-     * @param array $userScope
+     * @param mixed[] $userScope
      *
      * @return ApiUserInterface
      */
@@ -70,7 +70,7 @@ abstract class AbstractApiUser implements ApiUserInterface
     }
 
     /**
-     * @return ArrayCollection|PersistentCollection
+     * @return ArrayCollection<int, ApiUserTokenInterface>|PersistentCollection<int, ApiUserTokenInterface>
      */
     public function getApiTokens(): Collection
     {
@@ -86,7 +86,7 @@ abstract class AbstractApiUser implements ApiUserInterface
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {

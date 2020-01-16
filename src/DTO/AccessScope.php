@@ -17,7 +17,7 @@ final class AccessScope implements \JsonSerializable
     /**
      * AccessScope constructor.
      *
-     * @param array $scope
+     * @param mixed[] $scope
      */
     public function __construct(array $scope)
     {
@@ -59,7 +59,7 @@ final class AccessScope implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function jsonSerialize(): array
     {

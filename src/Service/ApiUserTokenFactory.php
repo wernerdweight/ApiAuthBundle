@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Service;
 
-use DateTime;
+use Safe\DateTime;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;

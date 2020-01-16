@@ -1,8 +1,8 @@
 imports:
-    - { resource: 'vendor/wernerdweight/cs/WernerDweight/CS/src/ecs.yaml' }
+    - { resource: 'vendor/wernerdweight/cs/src/ecs.yaml' }
 
 services:
-    Symplify\CodingStandard\Sniffs\DependencyInjection\NoClassInstantiationSniff:
+    WernerDweight\CS\Sniffs\DependencyInjection\NoClassInstantiationSniff:
         extraAllowedClasses:
             - WernerDweight\RA\RA
             - WernerDweight\ApiAuthBundle\DTO\*
@@ -11,5 +11,5 @@ parameters:
     skip:
         Symplify\CodingStandard\Sniffs\CleanCode\ForbiddenStaticFunctionSniff:
             - 'tests/Fixtures/*'
-        Symplify\CodingStandard\Sniffs\DependencyInjection\NoClassInstantiationSniff:
+        WernerDweight\CS\Sniffs\DependencyInjection\NoClassInstantiationSniff:
             - 'tests/Fixtures/*'

@@ -28,13 +28,14 @@ class ApiUserCredentials
      * @param string $baseAuthorizationHeader
      *
      * @throws \Safe\Exceptions\UrlException
+     * @throws \Safe\Exceptions\StringsException
      */
     public function __construct(string $baseAuthorizationHeader)
     {
         if (0 !== strpos($baseAuthorizationHeader, self::BASIC_PREFIX)) {
             throw new BadCredentialsException(self::EXCEPTION_INVALID_AUTH_TYPE);
         }
-        $baseAuthorizationHeader = substr($baseAuthorizationHeader, strlen(self::BASIC_PREFIX));
+        $baseAuthorizationHeader = \Safe\substr($baseAuthorizationHeader, strlen(self::BASIC_PREFIX));
         $baseAuthorizationHeader = \Safe\base64_decode($baseAuthorizationHeader, true);
         $credentials = explode(self::BASIC_DELIMITER, $baseAuthorizationHeader);
 

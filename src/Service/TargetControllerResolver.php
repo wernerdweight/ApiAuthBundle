@@ -46,7 +46,9 @@ class TargetControllerResolver
      */
     public function isTargeted(string $controllerPath): bool
     {
-        $controller = new ReflectionClass(explode('::', $controllerPath)[0]);
+        /** @var class-string $className */
+        $className = explode('::', $controllerPath)[0];
+        $controller = new ReflectionClass($className);
         $configuration = $this->getConfiguration();
 
         if ($controller->implementsInterface(ApiAuthControllerInterface::class)) {

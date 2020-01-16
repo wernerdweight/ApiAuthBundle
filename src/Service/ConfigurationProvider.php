@@ -56,7 +56,7 @@ class ConfigurationProvider
      * @param int         $userApiTokenExpirationInterval
      * @param bool        $userUseScopeAccessModel
      * @param string      $userAccessScopeChecker
-     * @param array       $targetControllers
+     * @param string[]    $targetControllers
      *
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */

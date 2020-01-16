@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Service\AccessScopeChecker;
 
+use Safe\Exceptions\StringsException;
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
 use WernerDweight\ApiAuthBundle\Exception\AccessScopeCheckerFactoryException;
 use WernerDweight\ApiAuthBundle\Service\AccessScopeChecker\Checker\AccessScopeCheckerInterface;
+use WernerDweight\RA\Exception\RAException;
 use WernerDweight\RA\RA;
 
 class AccessScopeCheckerFactory
@@ -16,12 +18,12 @@ class AccessScopeCheckerFactory
     /**
      * AccessScopeCheckerFactory constructor.
      *
-     * @param RewindableGenerator $scopeCheckers
+     * @param RewindableGenerator<AccessScopeCheckerInterface> $scopeCheckers
      */
     public function __construct(RewindableGenerator $scopeCheckers)
     {
         $this->scopeCheckers = new RA();
-        /** @var \Generator $iterator */
+        /** @var \Generator<AccessScopeCheckerInterface> $iterator */
         $iterator = $scopeCheckers->getIterator();
         while ($iterator->valid()) {
             /** @var AccessScopeCheckerInterface $scopeChecker */
@@ -36,7 +38,8 @@ class AccessScopeCheckerFactory
      *
      * @return AccessScopeCheckerInterface
      *
-     * @throws \WernerDweight\RA\Exception\RAException
+     * @throws RAException
+     * @throws StringsException
      */
     public function get(string $checkerClass): AccessScopeCheckerInterface
     {

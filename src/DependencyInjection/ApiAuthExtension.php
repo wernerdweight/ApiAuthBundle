@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class ApiAuthExtension extends Extension
 {
     /**
-     * @param array            $configs
+     * @param mixed[]          $configs
      * @param ContainerBuilder $container
      *
      * @throws \Exception

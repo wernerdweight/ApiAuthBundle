@@ -13,7 +13,7 @@ abstract class AbstractApiClient implements ApiClientInterface
     /** @var string */
     protected $clientSecret;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $clientScope = [];
 
     /**
@@ -63,7 +63,7 @@ abstract class AbstractApiClient implements ApiClientInterface
     }
 
     /**
-     * @param array $clientScope
+     * @param mixed[] $clientScope
      *
      * @return ApiClientInterface
      */
@@ -74,7 +74,7 @@ abstract class AbstractApiClient implements ApiClientInterface
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getRoles(): array
     {

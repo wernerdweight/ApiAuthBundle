@@ -72,7 +72,7 @@ abstract class AbstractApiUserToken implements ApiUserTokenInterface
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function jsonSerialize(): array
     {

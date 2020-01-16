@@ -19,7 +19,7 @@
     "require": {
         "php": ">=7.2.0",
         "symfony/framework-bundle": "^4.0",
-        "thecodingmachine/safe": "^0.1.13",
+        "thecodingmachine/safe": "^1.0",
         "wernerdweight/ra": "^1.0",
         "wernerdweight/enhanced-exception": "^1.0",
         "symfony/security-bundle": "^4.3",
@@ -27,8 +27,8 @@
         "wernerdweight/token-generator": "^1.0"
     },
     "require-dev": {
-        "wernerdweight/cs": "^1.2.1",
-        "thecodingmachine/phpstan-safe-rule": "^0.1.2",
+        "wernerdweight/cs": "^1.4",
+        "thecodingmachine/phpstan-safe-rule": "^1.0",
         "symfony/phpunit-bridge": "^4.3"
     },
     "suggest": {
@@ -47,7 +47,7 @@
     "scripts": {
         "fix": "ecs check ./src/ ./tests/ --config ecs.yaml --fix",
         "phpstan": "phpstan analyse ./src/ ./tests/ --level max",
-        "phpmd": "phpmd ./src/ text vendor/wernerdweight/cs/WernerDweight/CS/phpmd.xml",
+        "phpmd": "phpmd ./src/ text vendor/wernerdweight/cs/phpmd.xml",
         "ecs": "ecs check ./src/ ./tests/ --config ecs.yaml",
         "ecs-fix": "ecs check ./src/ ./tests/ --config ecs.yaml --fix",
         "phpunit": "phpunit",

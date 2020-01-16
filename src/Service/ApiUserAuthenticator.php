@@ -73,7 +73,6 @@ class ApiUserAuthenticator
         $token = $this->apiUserTokenFactory->create($user);
         $user->addApiToken($token);
 
-        /** @var ApiUserAuthenticatedEvent $event */
         $this->eventDispatcher->dispatch(new ApiUserAuthenticatedEvent($user));
 
         $this->entityManager->persist($token);
