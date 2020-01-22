@@ -14,6 +14,9 @@ final class RouteChecker implements AccessScopeCheckerInterface
     /** @var Request */
     private $request;
 
+    /** @var RequestStack */
+    private $requestStack;
+
     /**
      * RouteChecker constructor.
      *
@@ -21,11 +24,22 @@ final class RouteChecker implements AccessScopeCheckerInterface
      */
     public function __construct(RequestStack $requestStack)
     {
-        $request = $requestStack->getCurrentRequest();
-        if (null === $request) {
-            throw new RouteCheckerException(RouteCheckerException::EXCEPTION_NO_REQUEST);
+        $this->requestStack = $requestStack;
+    }
+
+    /**
+     * @return Request
+     */
+    private function getRequest(): Request
+    {
+        if (null === $this->request) {
+            $request = $this->requestStack->getCurrentRequest();
+            if (null === $request) {
+                throw new RouteCheckerException(RouteCheckerException::EXCEPTION_NO_REQUEST);
+            }
+            $this->request = $request;
         }
-        $this->request = $request;
+        return $this->request;
     }
 
     /**
@@ -37,7 +51,7 @@ final class RouteChecker implements AccessScopeCheckerInterface
      */
     public function check(AccessScope $scope): string
     {
-        $route = $this->request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        $route = $this->getRequest()->attributes->get(ApiAuthEnum::ROUTE_KEY);
         return $scope->isAccessible($route);
     }
 }

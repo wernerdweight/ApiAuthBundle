@@ -19,6 +19,9 @@ final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
     /** @var Request */
     private $request;
 
+    /** @var RequestStack */
+    private $requestStack;
+
     /**
      * RouteChecker constructor.
      *
@@ -26,11 +29,22 @@ final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
      */
     public function __construct(RequestStack $requestStack)
     {
-        $request = $requestStack->getCurrentRequest();
-        if (null === $request) {
-            throw new DoctrineCrudApiCheckerException(DoctrineCrudApiCheckerException::EXCEPTION_NO_REQUEST);
+        $this->requestStack = $requestStack;
+    }
+
+    /**
+     * @return Request
+     */
+    private function getRequest(): Request
+    {
+        if (null === $this->request) {
+            $request = $this->requestStack->getCurrentRequest();
+            if (null === $request) {
+                throw new DoctrineCrudApiCheckerException(DoctrineCrudApiCheckerException::EXCEPTION_NO_REQUEST);
+            }
+            $this->request = $request;
         }
-        $this->request = $request;
+        return $this->request;
     }
 
     /**
@@ -42,7 +56,7 @@ final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
      */
     public function check(AccessScope $scope): string
     {
-        $attributes = $this->request->attributes;
+        $attributes = $this->getRequest()->attributes;
         $route = $attributes->get(ApiAuthEnum::ROUTE_KEY);
         if (false === strpos($route, self::DOCTRINE_CRUD_API_ROUTE_PREFIX)) {
             return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
