@@ -13,9 +13,6 @@ class ApiClientCredentials
 
     /**
      * ApiClientCredentials constructor.
-     *
-     * @param string $clientId
-     * @param string $clientSecret
      */
     public function __construct(string $clientId, string $clientSecret)
     {
@@ -23,17 +20,11 @@ class ApiClientCredentials
         $this->clientSecret = $clientSecret;
     }
 
-    /**
-     * @return string
-     */
     public function getClientId(): string
     {
         return $this->clientId;
     }
 
-    /**
-     * @return string
-     */
     public function getClientSecret(): string
     {
         return $this->clientSecret;

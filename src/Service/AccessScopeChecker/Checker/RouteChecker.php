@@ -19,17 +19,12 @@ final class RouteChecker implements AccessScopeCheckerInterface
 
     /**
      * RouteChecker constructor.
-     *
-     * @param RequestStack $requestStack
      */
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * @return Request
-     */
     private function getRequest(): Request
     {
         if (null === $this->request) {
@@ -43,10 +38,6 @@ final class RouteChecker implements AccessScopeCheckerInterface
     }
 
     /**
-     * @param AccessScope $scope
-     *
-     * @return string
-     *
      * @throws \WernerDweight\RA\Exception\RAException
      */
     public function check(AccessScope $scope): string

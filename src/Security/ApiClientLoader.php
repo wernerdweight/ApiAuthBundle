@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
@@ -26,8 +26,7 @@ class ApiClientLoader
     /**
      * ApiUserProvider constructor.
      *
-     * @param EntityManager         $entityManager
-     * @param ConfigurationProvider $configurationProvider
+     * @param EntityManager $entityManager
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -38,18 +37,14 @@ class ApiClientLoader
     }
 
     /**
-     * @return ObjectRepository
+     * @return EntityRepository<object>
      */
-    private function getRepository(): ObjectRepository
+    private function getRepository(): EntityRepository
     {
         return $this->entityManaager->getRepository($this->configurationProvider->getClientClass());
     }
 
     /**
-     * @param string $username
-     *
-     * @return ApiClientInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function load(string $username): ApiClientInterface
@@ -74,9 +69,6 @@ class ApiClientLoader
             return $apiClient;
         }
 
-        throw new ApiClientProviderException(
-            ApiClientProviderException::EXCEPTION_UNABLE_TO_LOAD,
-            [get_class($repository)]
-        );
+        throw new ApiClientProviderException(ApiClientProviderException::EXCEPTION_UNABLE_TO_LOAD, [get_class($repository)]);
     }
 }

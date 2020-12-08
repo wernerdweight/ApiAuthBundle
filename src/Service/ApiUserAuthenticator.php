@@ -35,10 +35,7 @@ class ApiUserAuthenticator
     /**
      * ApiUserAuthenticator constructor.
      *
-     * @param ApiUserLoader          $apiUserLoader
-     * @param EventDispatcher        $eventDispatcher
-     * @param EntityManagerInterface $entityManager
-     * @param ApiUserTokenFactory    $apiUserTokenFactory
+     * @param EventDispatcher $eventDispatcher
      */
     public function __construct(
         ApiUserLoader $apiUserLoader,
@@ -53,10 +50,6 @@ class ApiUserAuthenticator
     }
 
     /**
-     * @param Request $request
-     *
-     * @return ApiUserInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      * @throws \Safe\Exceptions\UrlException
      */

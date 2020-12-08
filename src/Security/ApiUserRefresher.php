@@ -30,8 +30,7 @@ class ApiUserRefresher
     /**
      * ApiUserProvider constructor.
      *
-     * @param EntityManager        $entityManager
-     * @param ApiUserClassResolver $apiUserClassResolver
+     * @param EntityManager $entityManager
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -41,9 +40,6 @@ class ApiUserRefresher
         $this->apiUserClassResolver = $apiUserClassResolver;
     }
 
-    /**
-     * @return ApiUserRepositoryInterface
-     */
     private function getRepository(): ApiUserRepositoryInterface
     {
         /** @var ApiUserRepositoryInterface $repository */
@@ -52,10 +48,6 @@ class ApiUserRefresher
     }
 
     /**
-     * @param UserInterface $user
-     *
-     * @return ApiUserInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function refresh(UserInterface $user): ApiUserInterface

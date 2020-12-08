@@ -15,10 +15,6 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 abstract class AbstractApiUserRepository extends ServiceEntityRepository implements ApiUserRepositoryInterface
 {
     /**
-     * @param string $token
-     *
-     * @return ApiUserInterface|null
-     *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findOneByToken(string $token): ?ApiUserInterface

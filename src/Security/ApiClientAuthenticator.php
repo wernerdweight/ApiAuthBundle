@@ -37,10 +37,6 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
 
     /**
      * ApiClientAuthenticator constructor.
-     *
-     * @param ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver
-     * @param ApiClientCredentialsChecker           $apiClientCredentialsChecker
-     * @param ApiClientAuthenticatedTokenFactory    $apiClientAuthenticatedTokenFactory
      */
     public function __construct(
         ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver,
@@ -53,11 +49,6 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param Request                      $request
-     * @param AuthenticationException|null $authException
-     *
-     * @return JsonResponse
-     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function start(Request $request, ?AuthenticationException $authException = null): JsonResponse
@@ -65,29 +56,18 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
         return new JsonResponse(['message' => self::AUTHORIZATION_REQUIRED_MESSAGE], Response::HTTP_UNAUTHORIZED);
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return bool
-     */
     public function supports(Request $request): bool
     {
         return $this->apiClientAuthenticatorRequestResolver->supports($request);
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return ApiClientCredentials
-     */
     public function getCredentials(Request $request): ApiClientCredentials
     {
         return $this->apiClientAuthenticatorRequestResolver->getCredentials($request);
     }
 
     /**
-     * @param mixed                 $credentials
-     * @param UserProviderInterface $userProvider
+     * @param mixed $credentials
      *
      * @return ApiClientInterface
      */
@@ -102,8 +82,6 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      * @param mixed              $credentials
      * @param ApiClientInterface $user
      *
-     * @return bool
-     *
      * @throws \Safe\Exceptions\StringsException
      * @throws \WernerDweight\RA\Exception\RAException
      */
@@ -113,10 +91,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param UserInterface $user
-     * @param string        $providerKey
-     *
-     * @return GuardTokenInterface
+     * @param string $providerKey
      */
     public function createAuthenticatedToken(UserInterface $user, $providerKey): GuardTokenInterface
     {
@@ -124,11 +99,6 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param Request                 $request
-     * @param AuthenticationException $exception
-     *
-     * @return JsonResponse
-     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
@@ -137,11 +107,7 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     }
 
     /**
-     * @param Request        $request
-     * @param TokenInterface $token
-     * @param string         $providerKey
-     *
-     * @return Response|null
+     * @param string $providerKey
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -151,9 +117,6 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
         return null;
     }
 
-    /**
-     * @return bool
-     */
     public function supportsRememberMe(): bool
     {
         return false;

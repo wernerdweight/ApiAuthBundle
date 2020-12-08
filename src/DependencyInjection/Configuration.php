@@ -17,9 +17,6 @@ final class Configuration implements ConfigurationInterface
     /** @var string */
     private const DEFAULT_CLIENT_PROPERTY = 'clientId';
 
-    /**
-     * @return TreeBuilder
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('api_auth');
@@ -31,9 +28,6 @@ final class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    /**
-     * @param ArrayNodeDefinition $node
-     */
     private function addConfiguration(ArrayNodeDefinition $node): void
     {
         $node

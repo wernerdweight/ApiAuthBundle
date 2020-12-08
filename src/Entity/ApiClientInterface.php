@@ -8,18 +8,9 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
 interface ApiClientInterface extends UserInterface
 {
-    /**
-     * @return string
-     */
     public function getClientId(): string;
 
-    /**
-     * @return string
-     */
     public function getClientSecret(): string;
 
-    /**
-     * @return AccessScope
-     */
     public function getClientScope(): AccessScope;
 }

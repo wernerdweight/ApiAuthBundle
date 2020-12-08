@@ -18,9 +18,6 @@ final class ApiUserProvider implements UserProviderInterface
 
     /**
      * ApiUserProvider constructor.
-     *
-     * @param ApiUserLoader    $apiUserLoader
-     * @param ApiUserRefresher $apiUserRefresher
      */
     public function __construct(
         ApiUserLoader $apiUserLoader,
@@ -33,8 +30,6 @@ final class ApiUserProvider implements UserProviderInterface
     /**
      * @param string $username
      *
-     * @return ApiUserInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function loadUserByUsername($username): ApiUserInterface
@@ -43,10 +38,6 @@ final class ApiUserProvider implements UserProviderInterface
     }
 
     /**
-     * @param UserInterface $user
-     *
-     * @return ApiUserInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function refreshUser(UserInterface $user): ApiUserInterface
@@ -56,8 +47,6 @@ final class ApiUserProvider implements UserProviderInterface
 
     /**
      * @param string $class
-     *
-     * @return bool
      *
      * @throws \Safe\Exceptions\SplException
      */

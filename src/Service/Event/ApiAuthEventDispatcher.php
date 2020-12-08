@@ -17,20 +17,12 @@ class ApiAuthEventDispatcher
 
     /**
      * ApiAuthEventDispatcher constructor.
-     *
-     * @param EventDispatcherInterface $eventDispatcher
      */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @param string           $token
-     * @param ApiUserInterface $user
-     *
-     * @return ApiUserTokenCheckedEvent
-     */
     public function dispatchTokenChecked(string $token, ApiUserInterface $user): ApiUserTokenCheckedEvent
     {
         /** @var ApiUserTokenCheckedEvent $event */
@@ -38,12 +30,6 @@ class ApiAuthEventDispatcher
         return $event;
     }
 
-    /**
-     * @param ApiClientCredentials $credentials
-     * @param ApiClientInterface   $apiClient
-     *
-     * @return ApiClientCredentialsCheckedEvent
-     */
     public function dispatchCredentialsChecked(
         ApiClientCredentials $credentials,
         ApiClientInterface $apiClient

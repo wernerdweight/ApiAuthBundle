@@ -9,12 +9,6 @@ use Symfony\Component\Security\Guard\Token\PostAuthenticationGuardToken;
 
 class ApiClientAuthenticatedTokenFactory
 {
-    /**
-     * @param UserInterface $user
-     * @param string        $providerKey
-     *
-     * @return GuardTokenInterface
-     */
     public function create(UserInterface $user, string $providerKey): GuardTokenInterface
     {
         /** @var string[] $roles */

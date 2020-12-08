@@ -29,9 +29,7 @@ class ApiUserTokenFactory
     /**
      * ApiUserTokenFactory constructor.
      *
-     * @param ConfigurationProvider $configurationProvider
-     * @param TokenGenerator        $tokenGenerator
-     * @param EventDispatcher       $eventDispatcher
+     * @param EventDispatcher $eventDispatcher
      */
     public function __construct(
         ConfigurationProvider $configurationProvider,
@@ -43,9 +41,6 @@ class ApiUserTokenFactory
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * @return string
-     */
     private function getTokenClass(): string
     {
         if (null === $this->tokenClass) {
@@ -58,11 +53,6 @@ class ApiUserTokenFactory
         return $this->tokenClass;
     }
 
-    /**
-     * @param ApiUserInterface $user
-     *
-     * @return string
-     */
     private function generateToken(ApiUserInterface $user): string
     {
         /** @var ApiUserTokenRefreshEvent $event */
@@ -76,10 +66,6 @@ class ApiUserTokenFactory
     }
 
     /**
-     * @param ApiUserInterface $user
-     *
-     * @return ApiUserTokenInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function create(ApiUserInterface $user): ApiUserTokenInterface

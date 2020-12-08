@@ -22,9 +22,6 @@ class ApiUserTokenCheckedEvent extends Event
 
     /**
      * ApiUserTokenCheckedEvent constructor.
-     *
-     * @param string           $token
-     * @param ApiUserInterface $apiUser
      */
     public function __construct(string $token, ApiUserInterface $apiUser)
     {
@@ -32,25 +29,17 @@ class ApiUserTokenCheckedEvent extends Event
         $this->apiUser = $apiUser;
     }
 
-    /**
-     * @return string
-     */
     public function getToken(): string
     {
         return $this->token;
     }
 
-    /**
-     * @return ApiUserInterface
-     */
     public function getApiUser(): ApiUserInterface
     {
         return $this->apiUser;
     }
 
     /**
-     * @param bool $valid
-     *
      * @return ApiUserTokenCheckedEvent
      */
     public function setValid(bool $valid): self
@@ -59,9 +48,6 @@ class ApiUserTokenCheckedEvent extends Event
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isValid(): bool
     {
         return $this->valid;

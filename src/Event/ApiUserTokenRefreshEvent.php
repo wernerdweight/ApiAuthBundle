@@ -19,34 +19,23 @@ class ApiUserTokenRefreshEvent extends Event
 
     /**
      * ApiUserTokenRefreshEvent constructor.
-     *
-     * @param ApiUserInterface $apiUser
      */
     public function __construct(ApiUserInterface $apiUser)
     {
         $this->apiUser = $apiUser;
     }
 
-    /**
-     * @param string $token
-     */
     public function setToken(string $token): self
     {
         $this->token = $token;
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getToken(): ?string
     {
         return $this->token;
     }
 
-    /**
-     * @return ApiUserInterface
-     */
     public function getApiUser(): ApiUserInterface
     {
         return $this->apiUser;

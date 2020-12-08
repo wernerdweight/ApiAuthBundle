@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -31,8 +31,7 @@ class ApiClientRefresher
     /**
      * ApiUserProvider constructor.
      *
-     * @param EntityManager         $entityManager
-     * @param ConfigurationProvider $configurationProvider
+     * @param EntityManager $entityManager
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -43,18 +42,14 @@ class ApiClientRefresher
     }
 
     /**
-     * @return ObjectRepository
+     * @return EntityRepository<object>
      */
-    private function getRepository(): ObjectRepository
+    private function getRepository(): EntityRepository
     {
         return $this->entityManaager->getRepository($this->configurationProvider->getClientClass());
     }
 
     /**
-     * @param UserInterface $user
-     *
-     * @return ApiClientInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function refresh(UserInterface $user): ApiClientInterface

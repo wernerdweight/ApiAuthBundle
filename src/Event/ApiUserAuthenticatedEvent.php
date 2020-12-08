@@ -16,17 +16,12 @@ class ApiUserAuthenticatedEvent extends Event
 
     /**
      * ApiUserAuthenticatedEvent constructor.
-     *
-     * @param ApiUserInterface $apiUser
      */
     public function __construct(ApiUserInterface $apiUser)
     {
         $this->apiUser = $apiUser;
     }
 
-    /**
-     * @return ApiUserInterface
-     */
     public function getApiUser(): ApiUserInterface
     {
         return $this->apiUser;

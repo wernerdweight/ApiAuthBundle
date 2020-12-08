@@ -28,11 +28,6 @@ class ApiUserTokenChecker
 
     /**
      * ApiClientAuthenticator constructor.
-     *
-     * @param ApiAuthEventDispatcher    $eventDispatcher
-     * @param ConfigurationProvider     $configurationProvider
-     * @param AccessScopeCheckerFactory $accessScopeCheckerFactory
-     * @param ApiUserProvider           $apiUserProvider
      */
     public function __construct(
         ApiAuthEventDispatcher $eventDispatcher,
@@ -46,17 +41,12 @@ class ApiUserTokenChecker
         $this->apiUserProvider = $apiUserProvider;
     }
 
-    /**
-     * @return ApiUserInterface|null
-     */
     public function getCheckedApiUser(): ?ApiUserInterface
     {
         return $this->apiUser;
     }
 
     /**
-     * @return bool
-     *
      * @throws \Safe\Exceptions\StringsException
      * @throws \WernerDweight\RA\Exception\RAException
      */

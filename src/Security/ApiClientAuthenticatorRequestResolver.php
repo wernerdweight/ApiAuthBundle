@@ -33,10 +33,6 @@ class ApiClientAuthenticatorRequestResolver
 
     /**
      * ApiClientAuthenticatorRequestResolver constructor.
-     *
-     * @param TargetControllerResolver    $targetControllerResolver
-     * @param ConfigurationProvider       $configurationProvider
-     * @param ApiClientCredentialsFactory $apiClientCredentialsFactory
      */
     public function __construct(
         TargetControllerResolver $targetControllerResolver,
@@ -48,11 +44,6 @@ class ApiClientAuthenticatorRequestResolver
         $this->apiClientCredentialsFactory = $apiClientCredentialsFactory;
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return bool
-     */
     public function supports(Request $request): bool
     {
         // check target controllers
@@ -69,11 +60,6 @@ class ApiClientAuthenticatorRequestResolver
         return true;
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return ApiClientCredentials
-     */
     public function getCredentials(Request $request): ApiClientCredentials
     {
         $this->route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
@@ -94,17 +80,11 @@ class ApiClientAuthenticatorRequestResolver
         return $this->apiClientCredentialsFactory->create($clientId, $clientSecret);
     }
 
-    /**
-     * @return string|null
-     */
     public function getApiUserToken(): ?string
     {
         return $this->apiUserToken;
     }
 
-    /**
-     * @return string
-     */
     public function getRoute(): string
     {
         return $this->route;

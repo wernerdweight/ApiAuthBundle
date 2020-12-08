@@ -37,10 +37,7 @@ class ApiUserLoader
     /**
      * ApiUserProvider constructor.
      *
-     * @param EntityManager                $entityManager
-     * @param ConfigurationProvider        $configurationProvider
-     * @param UserPasswordEncoderInterface $passwordEncoder
-     * @param ApiUserClassResolver         $apiUserClassResolver
+     * @param EntityManager $entityManager
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -54,9 +51,6 @@ class ApiUserLoader
         $this->apiUserClassResolver = $apiUserClassResolver;
     }
 
-    /**
-     * @return ApiUserRepositoryInterface
-     */
     private function getRepository(): ApiUserRepositoryInterface
     {
         /** @var ApiUserRepositoryInterface $repository */
@@ -65,10 +59,6 @@ class ApiUserLoader
     }
 
     /**
-     * @param string $username
-     *
-     * @return ApiUserInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function loadByUsername(string $username): ApiUserInterface
@@ -84,10 +74,6 @@ class ApiUserLoader
     }
 
     /**
-     * @param ApiUserCredentials $credentials
-     *
-     * @return ApiUserInterface
-     *
      * @throws \Safe\Exceptions\StringsException
      */
     public function loadByCredentials(ApiUserCredentials $credentials): ApiUserInterface

@@ -20,17 +20,12 @@ class TargetControllerResolver
 
     /**
      * TargetControllerResolver constructor.
-     *
-     * @param ConfigurationProvider $configurationProvider
      */
     public function __construct(ConfigurationProvider $configurationProvider)
     {
         $this->configurationProvider = $configurationProvider;
     }
 
-    /**
-     * @return RA
-     */
     private function getConfiguration(): RA
     {
         if (null === $this->configuration) {
@@ -39,11 +34,6 @@ class TargetControllerResolver
         return $this->configuration;
     }
 
-    /**
-     * @param string $controllerPath
-     *
-     * @return bool
-     */
     public function isTargeted(string $controllerPath): bool
     {
         /** @var class-string $className */

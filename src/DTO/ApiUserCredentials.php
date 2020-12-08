@@ -25,8 +25,6 @@ class ApiUserCredentials
     /**
      * ApiUserCredentials constructor.
      *
-     * @param string $baseAuthorizationHeader
-     *
      * @throws \Safe\Exceptions\UrlException
      * @throws \Safe\Exceptions\StringsException
      */
@@ -46,17 +44,11 @@ class ApiUserCredentials
         $this->password = $credentials[1];
     }
 
-    /**
-     * @return string
-     */
     public function getLogin(): string
     {
         return $this->login;
     }
 
-    /**
-     * @return string
-     */
     public function getPassword(): string
     {
         return $this->password;

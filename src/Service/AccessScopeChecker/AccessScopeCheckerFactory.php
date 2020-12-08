@@ -34,20 +34,13 @@ class AccessScopeCheckerFactory
     }
 
     /**
-     * @param string $checkerClass
-     *
-     * @return AccessScopeCheckerInterface
-     *
      * @throws RAException
      * @throws StringsException
      */
     public function get(string $checkerClass): AccessScopeCheckerInterface
     {
         if (true !== $this->scopeCheckers->hasKey($checkerClass)) {
-            throw new AccessScopeCheckerFactoryException(
-                AccessScopeCheckerFactoryException::EXCEPTION_UNKNOWN_CHECKER,
-                [$checkerClass]
-            );
+            throw new AccessScopeCheckerFactoryException(AccessScopeCheckerFactoryException::EXCEPTION_UNKNOWN_CHECKER, [$checkerClass ]);
         }
         /** @var AccessScopeCheckerInterface $scopeChecker */
         $scopeChecker = $this->scopeCheckers->get($checkerClass);

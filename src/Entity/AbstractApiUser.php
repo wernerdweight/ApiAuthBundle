@@ -29,8 +29,6 @@ abstract class AbstractApiUser implements ApiUserInterface
 
     /**
      * @param mixed[] $userScope
-     *
-     * @return ApiUserInterface
      */
     public function setUserScope(array $userScope): ApiUserInterface
     {
@@ -38,19 +36,11 @@ abstract class AbstractApiUser implements ApiUserInterface
         return $this;
     }
 
-    /**
-     * @return AccessScope
-     */
     public function getUserScope(): AccessScope
     {
         return new AccessScope($this->userScope);
     }
 
-    /**
-     * @param ApiUserTokenInterface $apiToken
-     *
-     * @return ApiUserInterface
-     */
     public function addApiToken(ApiUserTokenInterface $apiToken): ApiUserInterface
     {
         $this->apiTokens->add($apiToken);
@@ -59,11 +49,6 @@ abstract class AbstractApiUser implements ApiUserInterface
         return $this;
     }
 
-    /**
-     * @param ApiUserTokenInterface $apiUserToken
-     *
-     * @return bool
-     */
     public function removeApiToken(ApiUserTokenInterface $apiUserToken): bool
     {
         return $this->apiTokens->removeElement($apiUserToken);
@@ -77,9 +62,6 @@ abstract class AbstractApiUser implements ApiUserInterface
         return $this->apiTokens;
     }
 
-    /**
-     * @return ApiUserTokenInterface|null
-     */
     public function getCurrentToken(): ?ApiUserTokenInterface
     {
         return $this->currentToken;

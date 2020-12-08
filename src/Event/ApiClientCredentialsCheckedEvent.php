@@ -23,9 +23,6 @@ class ApiClientCredentialsCheckedEvent extends Event
 
     /**
      * ApiClientCredentialsCheckedEvent constructor.
-     *
-     * @param ApiClientCredentials $credentials
-     * @param ApiClientInterface   $apiClient
      */
     public function __construct(ApiClientCredentials $credentials, ApiClientInterface $apiClient)
     {
@@ -33,25 +30,17 @@ class ApiClientCredentialsCheckedEvent extends Event
         $this->apiClient = $apiClient;
     }
 
-    /**
-     * @return ApiClientCredentials
-     */
     public function getCredentials(): ApiClientCredentials
     {
         return $this->credentials;
     }
 
-    /**
-     * @return ApiClientInterface
-     */
     public function getApiClient(): ApiClientInterface
     {
         return $this->apiClient;
     }
 
     /**
-     * @param bool $valid
-     *
      * @return ApiClientCredentialsCheckedEvent
      */
     public function setValid(bool $valid): self
@@ -60,9 +49,6 @@ class ApiClientCredentialsCheckedEvent extends Event
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isValid(): bool
     {
         return $this->valid;

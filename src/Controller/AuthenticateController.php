@@ -10,11 +10,6 @@ use WernerDweight\ApiAuthBundle\Service\ApiUserAuthenticator;
 
 final class AuthenticateController extends AbstractController implements ApiAuthControllerInterface
 {
-    /**
-     * @param ApiUserAuthenticator $authenticator
-     *
-     * @return JsonResponse
-     */
     public function index(Request $request, ApiUserAuthenticator $authenticator): JsonResponse
     {
         $user = $authenticator->authenticate($request);

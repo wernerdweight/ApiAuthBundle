@@ -36,12 +36,6 @@ class ApiClientCredentialsChecker
 
     /**
      * ApiClientAuthenticator constructor.
-     *
-     * @param ApiAuthEventDispatcher                $eventDispatcher
-     * @param ConfigurationProvider                 $configurationProvider
-     * @param AccessScopeCheckerFactory             $accessScopeCheckerFactory
-     * @param ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver
-     * @param ApiUserTokenChecker                   $apiUserTokenChecker
      */
     public function __construct(
         ApiAuthEventDispatcher $eventDispatcher,
@@ -58,8 +52,6 @@ class ApiClientCredentialsChecker
     }
 
     /**
-     * @return bool
-     *
      * @throws \Safe\Exceptions\StringsException
      * @throws \WernerDweight\RA\Exception\RAException
      */
@@ -67,21 +59,13 @@ class ApiClientCredentialsChecker
     {
         $token = $this->apiClientAuthenticatorRequestResolver->getApiUserToken();
         if (null === $token) {
-            throw new UnauthorizedHttpException(
-                ApiAuthEnum::REALM,
-                \Safe\sprintf(self::EXCEPTION_NO_USER_TOKEN, ApiAuthEnum::API_USER_TOKEN_HEADER)
-            );
+            throw new UnauthorizedHttpException(ApiAuthEnum::REALM, \Safe\sprintf(self::EXCEPTION_NO_USER_TOKEN, ApiAuthEnum::API_USER_TOKEN_HEADER));
         }
 
         return $this->apiUserTokenChecker->check($token);
     }
 
     /**
-     * @param ApiClientCredentials $credentials
-     * @param ApiClientInterface   $user
-     *
-     * @return bool
-     *
      * @throws \Safe\Exceptions\StringsException
      * @throws \WernerDweight\RA\Exception\RAException
      */
