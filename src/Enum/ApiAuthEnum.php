@@ -28,5 +28,7 @@ class ApiAuthEnum
     /** @var string */
     public const ROUTE_KEY = '_route';
     /** @var string */
+    public const ROUTE_OVERRIDE_KEY = '_route_override';
+    /** @var string */
     public const REALM = 'Basic realm="API"';
 }

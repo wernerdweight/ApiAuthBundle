@@ -47,14 +47,18 @@ final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
      */
     public function check(AccessScope $scope): string
     {
-        $attributes = $this->getRequest()->attributes;
-        $route = $attributes->get(ApiAuthEnum::ROUTE_KEY);
+        $request = $this->getRequest();
+        $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
+        if (null !== $routeOverride) {
+            $route = $routeOverride;
+        }
         if (false === strpos($route, self::DOCTRINE_CRUD_API_ROUTE_PREFIX)) {
             return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
         }
 
         $action = \Safe\substr($route, strlen(self::DOCTRINE_CRUD_API_ROUTE_PREFIX));
-        $entityName = $attributes->get(self::ENTITY_NAME_KEY);
+        $entityName = $request->attributes->get(self::ENTITY_NAME_KEY);
         return $scope->isAccessible(\Safe\sprintf('%s.%s', $entityName, $action));
     }
 }

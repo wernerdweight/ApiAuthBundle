@@ -42,7 +42,13 @@ final class RouteChecker implements AccessScopeCheckerInterface
      */
     public function check(AccessScope $scope): string
     {
-        $route = $this->getRequest()->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        $request = $this->getRequest();
+        $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
+        if (null !== $routeOverride) {
+            $route = $routeOverride;
+        }
+        $this->route = $route;
         return $scope->isAccessible($route);
     }
 }

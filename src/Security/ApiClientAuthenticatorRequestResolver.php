@@ -62,7 +62,12 @@ class ApiClientAuthenticatorRequestResolver
 
     public function getCredentials(Request $request): ApiClientCredentials
     {
-        $this->route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
+        if (null !== $routeOverride) {
+            $route = $routeOverride;
+        }
+        $this->route = $route;
 
         $headers = $request->headers;
 
