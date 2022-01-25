@@ -59,7 +59,10 @@ class ApiClientCredentialsChecker
     {
         $token = $this->apiClientAuthenticatorRequestResolver->getApiUserToken();
         if (null === $token) {
-            throw new UnauthorizedHttpException(ApiAuthEnum::REALM, \Safe\sprintf(self::EXCEPTION_NO_USER_TOKEN, ApiAuthEnum::API_USER_TOKEN_HEADER));
+            throw new UnauthorizedHttpException(ApiAuthEnum::REALM, \Safe\sprintf(
+                self::EXCEPTION_NO_USER_TOKEN,
+                ApiAuthEnum::API_USER_TOKEN_HEADER
+            ));
         }
 
         return $this->apiUserTokenChecker->check($token);

@@ -69,6 +69,8 @@ class ApiClientLoader
             return $apiClient;
         }
 
-        throw new ApiClientProviderException(ApiClientProviderException::EXCEPTION_UNABLE_TO_LOAD, [get_class($repository)]);
+        throw new ApiClientProviderException(ApiClientProviderException::EXCEPTION_UNABLE_TO_LOAD, [
+            get_class($repository),
+        ]);
     }
 }

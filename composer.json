@@ -45,11 +45,11 @@
         }
     },
     "scripts": {
-        "fix": "ecs check ./src/ ./tests/ --config ecs.yaml --fix",
+        "fix": "ecs check ./src/ ./tests/ --config ecs.php --fix",
         "phpstan": "phpstan analyse ./src/ ./tests/ --level max",
         "phpmd": "phpmd ./src/ text vendor/wernerdweight/cs/phpmd.xml",
-        "ecs": "ecs check ./src/ ./tests/ --config ecs.yaml",
-        "ecs-fix": "ecs check ./src/ ./tests/ --config ecs.yaml --fix",
+        "ecs": "ecs check ./src/ ./tests/ --config ecs.php",
+        "ecs-fix": "ecs check ./src/ ./tests/ --config ecs.php --fix",
         "phpunit": "phpunit"
     },
     "extra": {
