@@ -8,3 +8,5 @@ wds_api_auth_authenticate: &wds_api_auth_authenticate_with_slash
 wds_api_auth_authenticate_without_slash:
     <<: *wds_api_auth_authenticate_with_slash
     path: /authenticate
+    defaults:
+        _route_override: wds_api_auth_authenticate
