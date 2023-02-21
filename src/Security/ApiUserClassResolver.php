@@ -8,15 +8,16 @@ use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 
 class ApiUserClassResolver
 {
-    /** @var class-string */
+    /**
+     * @var class-string
+     */
     private $userClass;
 
-    /** @var ConfigurationProvider */
+    /**
+     * @var ConfigurationProvider
+     */
     private $configurationProvider;
 
-    /**
-     * ApiUserProvider constructor.
-     */
     public function __construct(ConfigurationProvider $configurationProvider)
     {
         $this->configurationProvider = $configurationProvider;

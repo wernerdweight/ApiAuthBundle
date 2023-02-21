@@ -12,32 +12,43 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-final class ApiClientAuthenticator implements AuthenticatorInterface
+// FIXME: authentication changed a ton between Symfony 5 and 6, this needs to be updated and tested
+final class ApiClientAuthenticator extends AbstractAuthenticator //implements AuthenticatorInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const AUTHORIZATION_REQUIRED_MESSAGE = 'Client id and secret are required to authenticate!';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     private const UNAUTHORIZED_MESSAGE =
         'Client id, secret or user api token are invalid, expired or not allowed access!';
 
-    /** @var ApiClientAuthenticatorRequestResolver */
+    /**
+     * @var ApiClientAuthenticatorRequestResolver
+     */
     private $apiClientAuthenticatorRequestResolver;
 
-    /** @var ApiClientCredentialsChecker */
+    /**
+     * @var ApiClientCredentialsChecker
+     */
     private $apiClientCredentialsChecker;
 
-    /** @var ApiClientAuthenticatedTokenFactory */
+    /**
+     * @var ApiClientAuthenticatedTokenFactory
+     */
     private $apiClientAuthenticatedTokenFactory;
 
-    /**
-     * ApiClientAuthenticator constructor.
-     */
     public function __construct(
         ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver,
         ApiClientCredentialsChecker $apiClientCredentialsChecker,
@@ -53,7 +64,9 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function start(Request $request, ?AuthenticationException $authException = null): JsonResponse
     {
-        return new JsonResponse(['message' => self::AUTHORIZATION_REQUIRED_MESSAGE], Response::HTTP_UNAUTHORIZED);
+        return new JsonResponse([
+            'message' => self::AUTHORIZATION_REQUIRED_MESSAGE,
+        ], Response::HTTP_UNAUTHORIZED);
     }
 
     public function supports(Request $request): bool
@@ -103,7 +116,9 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
      */
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
-        return new JsonResponse(['message' => self::UNAUTHORIZED_MESSAGE], Response::HTTP_FORBIDDEN);
+        return new JsonResponse([
+            'message' => self::UNAUTHORIZED_MESSAGE,
+        ], Response::HTTP_FORBIDDEN);
     }
 
     /**
@@ -120,5 +135,10 @@ final class ApiClientAuthenticator implements AuthenticatorInterface
     public function supportsRememberMe(): bool
     {
         return false;
+    }
+
+    public function authenticate(Request $request): Passport
+    {
+        // TODO: Implement authenticate() method.
     }
 }

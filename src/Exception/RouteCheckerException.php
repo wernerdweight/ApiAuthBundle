@@ -7,10 +7,14 @@ use WernerDweight\EnhancedException\Exception\AbstractEnhancedException;
 
 class RouteCheckerException extends AbstractEnhancedException
 {
-    /** @var int */
+    /**
+     * @var int
+     */
     public const EXCEPTION_NO_REQUEST = 1;
 
-    /** @var string[] */
+    /**
+     * @var string[]
+     */
     protected static $messages = [
         self::EXCEPTION_NO_REQUEST => 'No request exists!',
     ];

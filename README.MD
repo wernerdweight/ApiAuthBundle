@@ -3,7 +3,7 @@ ApiAuthBundle
 
 Symfony bundle providing API authentication and authorization.
 
-[![Build Status](https://travis-ci.org/wernerdweight/ApiAuthBundle.svg?branch=master)](https://travis-ci.org/wernerdweight/ApiAuthBundle)
+[![Build Status](https://app.travis-ci.com/wernerdweight/ApiAuthBundle.svg?branch=master)](https://app.travis-ci.com/wernerdweight/ApiAuthBundle)
 [![Latest Stable Version](https://poser.pugx.org/wernerdweight/api-auth-bundle/v/stable)](https://packagist.org/packages/wernerdweight/api-auth-bundle)
 [![Total Downloads](https://poser.pugx.org/wernerdweight/api-auth-bundle/downloads)](https://packagist.org/packages/wernerdweight/api-auth-bundle)
 [![License](https://poser.pugx.org/wernerdweight/api-auth-bundle/license)](https://packagist.org/packages/wernerdweight/api-auth-bundle)

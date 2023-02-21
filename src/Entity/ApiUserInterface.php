@@ -3,14 +3,12 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Entity;
 
+use Symfony\Component\Security\Core\User\UserInterface;
 use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
-interface ApiUserInterface extends \JsonSerializable
+interface ApiUserInterface extends \JsonSerializable, UserInterface
 {
-    /**
-     * @return ApiUserInterface
-     */
-    public function addApiToken(ApiUserTokenInterface $apiToken): self;
+    public function addApiToken(ApiUserTokenInterface $apiToken): void;
 
     public function getCurrentToken(): ?ApiUserTokenInterface;
 

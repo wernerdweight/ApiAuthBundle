@@ -5,15 +5,16 @@ namespace WernerDweight\ApiAuthBundle\DTO;
 
 class ApiClientCredentials
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $clientId;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $clientSecret;
 
-    /**
-     * ApiClientCredentials constructor.
-     */
     public function __construct(string $clientId, string $clientSecret)
     {
         $this->clientId = $clientId;

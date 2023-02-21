@@ -8,27 +8,29 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 
 class ApiUserTokenRefreshEvent extends Event
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public const NAME = 'wds.api_auth_bundle.api_user_token_refresh';
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $token;
 
-    /** @var ApiUserInterface */
+    /**
+     * @var ApiUserInterface
+     */
     private $apiUser;
 
-    /**
-     * ApiUserTokenRefreshEvent constructor.
-     */
     public function __construct(ApiUserInterface $apiUser)
     {
         $this->apiUser = $apiUser;
     }
 
-    public function setToken(string $token): self
+    public function setToken(string $token): void
     {
         $this->token = $token;
-        return $this;
     }
 
     public function getToken(): ?string

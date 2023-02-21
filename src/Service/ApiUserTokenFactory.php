@@ -14,16 +14,24 @@ use WernerDweight\TokenGenerator\TokenGenerator;
 
 class ApiUserTokenFactory
 {
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $tokenClass;
 
-    /** @var ConfigurationProvider */
+    /**
+     * @var ConfigurationProvider
+     */
     private $configurationProvider;
 
-    /** @var TokenGenerator */
+    /**
+     * @var TokenGenerator
+     */
     private $tokenGenerator;
 
-    /** @var EventDispatcher */
+    /**
+     * @var EventDispatcher
+     */
     private $eventDispatcher;
 
     /**
@@ -39,6 +47,26 @@ class ApiUserTokenFactory
         $this->configurationProvider = $configurationProvider;
         $this->tokenGenerator = $tokenGenerator;
         $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * @throws \Safe\Exceptions\StringsException
+     */
+    public function create(ApiUserInterface $user): ApiUserTokenInterface
+    {
+        $tokenClass = $this->getTokenClass();
+        /** @var ApiUserTokenInterface $token */
+        $token = new $tokenClass();
+        $token->setToken($this->generateToken($user));
+        $token->setExpirationDate(
+            new DateTime(
+                \Safe\sprintf(
+                    '+%d seconds',
+                    $this->configurationProvider->getUserApiTokenExpirationInterval()
+                )
+            )
+        );
+        return $token;
     }
 
     private function getTokenClass(): string
@@ -62,27 +90,6 @@ class ApiUserTokenFactory
         if (null === $token) {
             $token = $this->tokenGenerator->generate();
         }
-        return $token;
-    }
-
-    /**
-     * @throws \Safe\Exceptions\StringsException
-     */
-    public function create(ApiUserInterface $user): ApiUserTokenInterface
-    {
-        $tokenClass = $this->getTokenClass();
-        /** @var ApiUserTokenInterface $token */
-        $token = new $tokenClass();
-        $token
-            ->setToken($this->generateToken($user))
-            ->setExpirationDate(
-                new DateTime(
-                    \Safe\sprintf(
-                        '+%d seconds',
-                        $this->configurationProvider->getUserApiTokenExpirationInterval()
-                    )
-                )
-            );
         return $token;
     }
 }

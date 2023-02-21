@@ -5,24 +5,15 @@ namespace WernerDweight\ApiAuthBundle\Entity;
 
 interface ApiUserTokenInterface extends \JsonSerializable
 {
-    /**
-     * @return ApiUserTokenInterface
-     */
-    public function setToken(string $token): self;
+    public function setToken(string $token): void;
 
     public function getToken(): string;
 
-    /**
-     * @return ApiUserTokenInterface
-     */
-    public function setExpirationDate(\DateTime $expirationDate): self;
+    public function setExpirationDate(\DateTime $expirationDate): void;
 
     public function getExpirationDate(): \DateTime;
 
-    /**
-     * @return ApiUserTokenInterface
-     */
-    public function setApiUser(ApiUserInterface $apiUser): self;
+    public function setApiUser(ApiUserInterface $apiUser): void;
 
     public function getApiUser(): ApiUserInterface;
 }

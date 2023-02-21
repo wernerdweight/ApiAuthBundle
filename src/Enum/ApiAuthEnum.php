@@ -5,30 +5,57 @@ namespace WernerDweight\ApiAuthBundle\Enum;
 
 class ApiAuthEnum
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public const CLIENT_ID_HEADER = 'X-Client-Id';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public const CLIENT_SECRET_HEADER = 'X-Client-Secret';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public const API_USER_TOKEN_HEADER = 'X-Api-User-Token';
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public const SCOPE_ACCESSIBILITY_ACCESSIBLE = 'true';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public const SCOPE_ACCESSIBILITY_FORBIDDEN = 'false';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public const SCOPE_ACCESSIBILITY_ON_BEHALF = 'on-behalf';
-    /** @var string[] */
+
+    /**
+     * @var string[]
+     */
     public const SCOPE_ACCESSIBILITY_OPTIONS = [
         self::SCOPE_ACCESSIBILITY_ACCESSIBLE,
         self::SCOPE_ACCESSIBILITY_FORBIDDEN,
         self::SCOPE_ACCESSIBILITY_ON_BEHALF,
     ];
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public const ROUTE_KEY = '_route';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public const ROUTE_OVERRIDE_KEY = '_route_override';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     public const REALM = 'Basic realm="API"';
 }

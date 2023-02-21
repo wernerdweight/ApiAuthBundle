@@ -7,13 +7,19 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
 abstract class AbstractApiClient implements ApiClientInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $clientId;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $clientSecret;
 
-    /** @var mixed[] */
+    /**
+     * @var mixed[]
+     */
     protected $clientScope = [];
 
     public function getClientId(): string
@@ -21,10 +27,9 @@ abstract class AbstractApiClient implements ApiClientInterface
         return $this->clientId;
     }
 
-    public function setClientId(string $clientId): ApiClientInterface
+    public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
-        return $this;
     }
 
     public function getClientSecret(): string
@@ -32,10 +37,9 @@ abstract class AbstractApiClient implements ApiClientInterface
         return $this->clientSecret;
     }
 
-    public function setClientSecret(string $clientSecret): ApiClientInterface
+    public function setClientSecret(string $clientSecret): void
     {
         $this->clientSecret = $clientSecret;
-        return $this;
     }
 
     public function getClientScope(): AccessScope
@@ -46,10 +50,9 @@ abstract class AbstractApiClient implements ApiClientInterface
     /**
      * @param mixed[] $clientScope
      */
-    public function setClientScope(array $clientScope): ApiClientInterface
+    public function setClientScope(array $clientScope): void
     {
         $this->clientScope = $clientScope;
-        return $this;
     }
 
     /**

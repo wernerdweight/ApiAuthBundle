@@ -13,30 +13,42 @@ use WernerDweight\ApiAuthBundle\Service\Event\ApiAuthEventDispatcher;
 
 class ApiClientCredentialsChecker
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const EXCEPTION_NO_USER_TOKEN =
         'No user token present in headers! You must provide value for the header %s.';
-    /** @var string */
-    private const AUTH_ROUTE_NAME = 'wds_api_auth_authenticate';
-
-    /** @var ApiAuthEventDispatcher */
-    private $eventDispatcher;
-
-    /** @var ConfigurationProvider */
-    private $configurationProvider;
-
-    /** @var AccessScopeCheckerFactory */
-    private $accessScopeCheckerFactory;
-
-    /** @var ApiClientAuthenticatorRequestResolver */
-    private $apiClientAuthenticatorRequestResolver;
-
-    /** @var ApiUserTokenChecker */
-    private $apiUserTokenChecker;
 
     /**
-     * ApiClientAuthenticator constructor.
+     * @var string
      */
+    private const AUTH_ROUTE_NAME = 'wds_api_auth_authenticate';
+
+    /**
+     * @var ApiAuthEventDispatcher
+     */
+    private $eventDispatcher;
+
+    /**
+     * @var ConfigurationProvider
+     */
+    private $configurationProvider;
+
+    /**
+     * @var AccessScopeCheckerFactory
+     */
+    private $accessScopeCheckerFactory;
+
+    /**
+     * @var ApiClientAuthenticatorRequestResolver
+     */
+    private $apiClientAuthenticatorRequestResolver;
+
+    /**
+     * @var ApiUserTokenChecker
+     */
+    private $apiUserTokenChecker;
+
     public function __construct(
         ApiAuthEventDispatcher $eventDispatcher,
         ConfigurationProvider $configurationProvider,
@@ -49,23 +61,6 @@ class ApiClientCredentialsChecker
         $this->accessScopeCheckerFactory = $accessScopeCheckerFactory;
         $this->apiClientAuthenticatorRequestResolver = $apiClientAuthenticatorRequestResolver;
         $this->apiUserTokenChecker = $apiUserTokenChecker;
-    }
-
-    /**
-     * @throws \Safe\Exceptions\StringsException
-     * @throws \WernerDweight\RA\Exception\RAException
-     */
-    private function checkUserApiToken(): bool
-    {
-        $token = $this->apiClientAuthenticatorRequestResolver->getApiUserToken();
-        if (null === $token) {
-            throw new UnauthorizedHttpException(ApiAuthEnum::REALM, \Safe\sprintf(
-                self::EXCEPTION_NO_USER_TOKEN,
-                ApiAuthEnum::API_USER_TOKEN_HEADER
-            ));
-        }
-
-        return $this->apiUserTokenChecker->check($token);
     }
 
     /**
@@ -86,9 +81,10 @@ class ApiClientCredentialsChecker
         // check api client scope
         $scopeAccessibility = ApiAuthEnum::SCOPE_ACCESSIBILITY_ACCESSIBLE;
         if (true === $this->configurationProvider->getClientUseScopeAccessModel()) {
-            $scopeAccessibility = $this->accessScopeCheckerFactory
-                ->get($this->configurationProvider->getClientAccessScopeChecker())
-                ->check($user->getClientScope());
+            $accessScopeChecker = $this->accessScopeCheckerFactory->get(
+                $this->configurationProvider->getClientAccessScopeChecker()
+            );
+            $scopeAccessibility = $accessScopeChecker->check($user->getClientScope());
             if (ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN === $scopeAccessibility) {
                 return false;
             }
@@ -104,5 +100,22 @@ class ApiClientCredentialsChecker
         }
 
         return true;
+    }
+
+    /**
+     * @throws \Safe\Exceptions\StringsException
+     * @throws \WernerDweight\RA\Exception\RAException
+     */
+    private function checkUserApiToken(): bool
+    {
+        $token = $this->apiClientAuthenticatorRequestResolver->getApiUserToken();
+        if (null === $token) {
+            throw new UnauthorizedHttpException(ApiAuthEnum::REALM, \Safe\sprintf(
+                self::EXCEPTION_NO_USER_TOKEN,
+                ApiAuthEnum::API_USER_TOKEN_HEADER
+            ));
+        }
+
+        return $this->apiUserTokenChecker->check($token);
     }
 }
