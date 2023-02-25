@@ -99,7 +99,7 @@ security:
             id: WernerDweight\ApiAuthBundle\Security\ApiClientProvider
             
     # ...
-    encoders:
+    password_hashers:
         App\Entity\User:    # your user entity
             algorithm: # ...
     
@@ -108,12 +108,8 @@ security:
         # ...
         main:
             # ...
-            guard:
-                authenticators:
-                    - WernerDweight\ApiAuthBundle\Security\ApiClientAuthenticator
-
-            # you should probably entirely disable anonymous access to the api
-            # anonymous: false
+            custom_authenticators:
+                - WernerDweight\ApiAuthBundle\Security\ApiClientAuthenticator
             
             # if you want, disable storing the client in the session
             # you MUST set stateless to `true` if you want to use `on behalf` access mode (see below)

@@ -6,7 +6,7 @@ namespace WernerDweight\ApiAuthBundle\Security;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use WernerDweight\ApiAuthBundle\DTO\ApiUserCredentials;
@@ -38,7 +38,7 @@ class ApiUserLoader
     private $configurationProvider;
 
     /**
-     * @var UserPasswordEncoderInterface
+     * @var UserPasswordHasherInterface
      */
     private $passwordEncoder;
 
@@ -55,7 +55,7 @@ class ApiUserLoader
     public function __construct(
         EntityManagerInterface $entityManager,
         ConfigurationProvider $configurationProvider,
-        UserPasswordEncoderInterface $passwordEncoder,
+        UserPasswordHasherInterface $passwordEncoder,
         ApiUserClassResolver $apiUserClassResolver
     ) {
         $this->entityManaager = $entityManager;

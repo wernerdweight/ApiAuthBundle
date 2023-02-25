@@ -30,16 +30,6 @@ final class ApiClientProvider implements UserProviderInterface
     }
 
     /**
-     * @param string $username
-     *
-     * @throws \Safe\Exceptions\StringsException
-     */
-    public function loadUserByUsername($username): ApiClientInterface
-    {
-        return $this->apiClientLoader->load($username);
-    }
-
-    /**
      * @throws \Safe\Exceptions\StringsException
      */
     public function refreshUser(UserInterface $user): ApiClientInterface
@@ -59,8 +49,8 @@ final class ApiClientProvider implements UserProviderInterface
     /**
      * @throws StringsException
      */
-    public function loadUserByIdentifier(string $identifier): UserInterface
+    public function loadUserByIdentifier(string $identifier): ApiClientInterface
     {
-        return $this->loadUserByUsername($identifier);
+        return $this->apiClientLoader->load($identifier);
     }
 }

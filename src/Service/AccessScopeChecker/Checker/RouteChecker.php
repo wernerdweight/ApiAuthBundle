@@ -11,7 +11,7 @@ use WernerDweight\ApiAuthBundle\Exception\RouteCheckerException;
 
 final class RouteChecker implements AccessScopeCheckerInterface
 {
-    private ?Request $request;
+    private ?Request $request = null;
 
     private RequestStack $requestStack;
 

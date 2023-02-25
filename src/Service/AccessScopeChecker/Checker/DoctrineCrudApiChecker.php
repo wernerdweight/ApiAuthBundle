@@ -21,7 +21,7 @@ final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
      */
     private const DOCTRINE_CRUD_API_ROUTE_PREFIX = 'wds_doctrine_crud_api_';
 
-    private ?Request $request;
+    private ?Request $request = null;
 
     private RequestStack $requestStack;
 

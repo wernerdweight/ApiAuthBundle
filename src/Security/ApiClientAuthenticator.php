@@ -8,107 +8,44 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Guard\AuthenticatorInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Guard\Token\GuardTokenInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use WernerDweight\ApiAuthBundle\DTO\ApiClientCredentials;
-use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 
-/**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- */
-// FIXME: authentication changed a ton between Symfony 5 and 6, this needs to be updated and tested
-final class ApiClientAuthenticator extends AbstractAuthenticator //implements AuthenticatorInterface
+final class ApiClientAuthenticator extends AbstractAuthenticator
 {
-    /**
-     * @var string
-     */
-    private const AUTHORIZATION_REQUIRED_MESSAGE = 'Client id and secret are required to authenticate!';
-
     /**
      * @var string
      */
     private const UNAUTHORIZED_MESSAGE =
         'Client id, secret or user api token are invalid, expired or not allowed access!';
 
-    /**
-     * @var ApiClientAuthenticatorRequestResolver
-     */
-    private $apiClientAuthenticatorRequestResolver;
+    private ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver;
 
-    /**
-     * @var ApiClientCredentialsChecker
-     */
-    private $apiClientCredentialsChecker;
+    private ApiClientCredentialsChecker $apiClientCredentialsChecker;
 
-    /**
-     * @var ApiClientAuthenticatedTokenFactory
-     */
-    private $apiClientAuthenticatedTokenFactory;
+    private ApiClientAuthenticatedTokenFactory $apiClientAuthenticatedTokenFactory;
+
+    private ApiClientProvider $apiClientProvider;
 
     public function __construct(
         ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver,
         ApiClientCredentialsChecker $apiClientCredentialsChecker,
-        ApiClientAuthenticatedTokenFactory $apiClientAuthenticatedTokenFactory
+        ApiClientAuthenticatedTokenFactory $apiClientAuthenticatedTokenFactory,
+        ApiClientProvider $apiClientProvider
     ) {
         $this->apiClientAuthenticatorRequestResolver = $apiClientAuthenticatorRequestResolver;
         $this->apiClientCredentialsChecker = $apiClientCredentialsChecker;
         $this->apiClientAuthenticatedTokenFactory = $apiClientAuthenticatedTokenFactory;
-    }
-
-    /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function start(Request $request, ?AuthenticationException $authException = null): JsonResponse
-    {
-        return new JsonResponse([
-            'message' => self::AUTHORIZATION_REQUIRED_MESSAGE,
-        ], Response::HTTP_UNAUTHORIZED);
+        $this->apiClientProvider = $apiClientProvider;
     }
 
     public function supports(Request $request): bool
     {
         return $this->apiClientAuthenticatorRequestResolver->supports($request);
-    }
-
-    public function getCredentials(Request $request): ApiClientCredentials
-    {
-        return $this->apiClientAuthenticatorRequestResolver->getCredentials($request);
-    }
-
-    /**
-     * @param mixed $credentials
-     *
-     * @return ApiClientInterface
-     */
-    public function getUser($credentials, UserProviderInterface $userProvider): UserInterface
-    {
-        /** @var ApiClientInterface $apiClient */
-        $apiClient = $userProvider->loadUserByUsername($credentials->getClientId());
-        return $apiClient;
-    }
-
-    /**
-     * @param mixed              $credentials
-     * @param ApiClientInterface $user
-     *
-     * @throws \Safe\Exceptions\StringsException
-     * @throws \WernerDweight\RA\Exception\RAException
-     */
-    public function checkCredentials($credentials, UserInterface $user): bool
-    {
-        return $this->apiClientCredentialsChecker->check($credentials, $user);
-    }
-
-    /**
-     * @param string $providerKey
-     */
-    public function createAuthenticatedToken(UserInterface $user, $providerKey): GuardTokenInterface
-    {
-        return $this->apiClientAuthenticatedTokenFactory->create($user, $providerKey);
     }
 
     /**
@@ -122,23 +59,21 @@ final class ApiClientAuthenticator extends AbstractAuthenticator //implements Au
     }
 
     /**
-     * @param string $providerKey
-     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         // all requests need to authenticate, continue processing of the request
         return null;
     }
 
-    public function supportsRememberMe(): bool
-    {
-        return false;
-    }
-
     public function authenticate(Request $request): Passport
     {
-        // TODO: Implement authenticate() method.
+        $credentials = $this->apiClientAuthenticatorRequestResolver->getCredentials($request);
+        $apiClient = $this->apiClientProvider->loadUserByIdentifier($credentials->getClientId());
+        if (true !== $this->apiClientCredentialsChecker->check($credentials, $apiClient)) {
+            throw new CustomUserMessageAuthenticationException(self::UNAUTHORIZED_MESSAGE);
+        }
+        return new SelfValidatingPassport(new UserBadge($apiClient->getClientId()));
     }
 }
