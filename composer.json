@@ -18,18 +18,18 @@
     ],
     "require": {
         "php": ">=8.1",
-        "symfony/framework-bundle": "^4.0|^5.0|^6.0",
+        "symfony/framework-bundle": "^6.0",
         "thecodingmachine/safe": "^2.4",
         "wernerdweight/ra": "^2.0",
         "wernerdweight/enhanced-exception": "^2.0",
-        "symfony/security-bundle": "^4.3|^5.0|^6.0",
+        "symfony/security-bundle": "^6.0",
         "symfony/orm-pack": "^1.0|^2.0",
         "wernerdweight/token-generator": "^2.0"
     },
     "require-dev": {
         "wernerdweight/cs": "^3.0",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
-        "symfony/phpunit-bridge": "^5.0|^6.0"
+        "symfony/phpunit-bridge": "^6.0"
     },
     "suggest": {
         "wernerdweight/doctrine-crud-api-bundle": "^2.0"
@@ -54,7 +54,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "^4.3|^5.0|^6.0"
+            "require": "^6.0"
         }
     }
 }
