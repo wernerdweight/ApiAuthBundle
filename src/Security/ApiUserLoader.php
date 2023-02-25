@@ -85,8 +85,9 @@ class ApiUserLoader
     public function loadByCredentials(ApiUserCredentials $credentials): ApiUserInterface
     {
         $loginProperty = $this->configurationProvider->getUserLoginProperty();
+        $userRepository = $this->getRepository();
         /** @var (ApiUserInterface & UserInterface)|null $user */
-        $user = $this->getRepository()
+        $user = $userRepository
             ->findOneBy([
                 $loginProperty => $credentials->getLogin(),
             ]);

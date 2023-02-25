@@ -27,19 +27,15 @@ final class ApiClientAuthenticator extends AbstractAuthenticator
 
     private ApiClientCredentialsChecker $apiClientCredentialsChecker;
 
-    private ApiClientAuthenticatedTokenFactory $apiClientAuthenticatedTokenFactory;
-
     private ApiClientProvider $apiClientProvider;
 
     public function __construct(
         ApiClientAuthenticatorRequestResolver $apiClientAuthenticatorRequestResolver,
         ApiClientCredentialsChecker $apiClientCredentialsChecker,
-        ApiClientAuthenticatedTokenFactory $apiClientAuthenticatedTokenFactory,
         ApiClientProvider $apiClientProvider
     ) {
         $this->apiClientAuthenticatorRequestResolver = $apiClientAuthenticatorRequestResolver;
         $this->apiClientCredentialsChecker = $apiClientCredentialsChecker;
-        $this->apiClientAuthenticatedTokenFactory = $apiClientAuthenticatedTokenFactory;
         $this->apiClientProvider = $apiClientProvider;
     }
 
