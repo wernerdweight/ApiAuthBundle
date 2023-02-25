@@ -5,7 +5,6 @@ namespace WernerDweight\ApiAuthBundle\Security;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
