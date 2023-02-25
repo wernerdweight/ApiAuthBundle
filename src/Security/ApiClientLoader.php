@@ -5,22 +5,27 @@ namespace WernerDweight\ApiAuthBundle\Security;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
 use WernerDweight\ApiAuthBundle\Exception\ApiClientProviderException;
 use WernerDweight\ApiAuthBundle\Service\ConfigurationProvider;
 
 class ApiClientLoader
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const EXCEPTION_NOT_FOUND = 'There is no ApiClient for given client id!';
 
-    /** @var EntityManager */
+    /**
+     * @var EntityManager
+     */
     private $entityManaager;
 
-    /** @var ConfigurationProvider */
+    /**
+     * @var ConfigurationProvider
+     */
     private $configurationProvider;
 
     /**
@@ -37,34 +42,28 @@ class ApiClientLoader
     }
 
     /**
-     * @return EntityRepository<object>
-     */
-    private function getRepository(): EntityRepository
-    {
-        return $this->entityManaager->getRepository($this->configurationProvider->getClientClass());
-    }
-
-    /**
      * @throws \Safe\Exceptions\StringsException
      */
     public function load(string $username): ApiClientInterface
     {
-        $repository = $this->getRepository();
+        $repository = $this->entityManaager->getRepository($this->configurationProvider->getClientClass());
         $property = $this->configurationProvider->getClientProperty();
         if (null !== $property) {
             /** @var ApiClientInterface|null $apiClient */
-            $apiClient = $repository->findOneBy([$property => $username]);
+            $apiClient = $repository->findOneBy([
+                $property => $username,
+            ]);
             if (null === $apiClient) {
-                throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
+                throw new UserNotFoundException(self::EXCEPTION_NOT_FOUND);
             }
             return $apiClient;
         }
 
         if ($repository instanceof UserLoaderInterface) {
             /** @var ApiClientInterface|null $apiClient */
-            $apiClient = $repository->loadUserByUsername($username);
+            $apiClient = $repository->loadUserByIdentifier($username);
             if (null === $apiClient) {
-                throw new UsernameNotFoundException(self::EXCEPTION_NOT_FOUND);
+                throw new UserNotFoundException(self::EXCEPTION_NOT_FOUND);
             }
             return $apiClient;
         }

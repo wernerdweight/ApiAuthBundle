@@ -7,24 +7,23 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
 abstract class AbstractApiClient implements ApiClientInterface
 {
-    /** @var string */
-    protected $clientId;
+    protected string $clientId;
 
-    /** @var string */
-    protected $clientSecret;
+    protected string $clientSecret;
 
-    /** @var mixed[] */
-    protected $clientScope = [];
+    /**
+     * @var mixed[]
+     */
+    protected array $clientScope = [];
 
     public function getClientId(): string
     {
         return $this->clientId;
     }
 
-    public function setClientId(string $clientId): ApiClientInterface
+    public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
-        return $this;
     }
 
     public function getClientSecret(): string
@@ -32,10 +31,9 @@ abstract class AbstractApiClient implements ApiClientInterface
         return $this->clientSecret;
     }
 
-    public function setClientSecret(string $clientSecret): ApiClientInterface
+    public function setClientSecret(string $clientSecret): void
     {
         $this->clientSecret = $clientSecret;
-        return $this;
     }
 
     public function getClientScope(): AccessScope
@@ -46,10 +44,9 @@ abstract class AbstractApiClient implements ApiClientInterface
     /**
      * @param mixed[] $clientScope
      */
-    public function setClientScope(array $clientScope): ApiClientInterface
+    public function setClientScope(array $clientScope): void
     {
         $this->clientScope = $clientScope;
-        return $this;
     }
 
     /**
@@ -66,12 +63,7 @@ abstract class AbstractApiClient implements ApiClientInterface
         return $this->getClientSecret();
     }
 
-    public function getSalt(): ?string
-    {
-        return null;
-    }
-
-    public function getUsername(): string
+    public function getUserIdentifier(): string
     {
         return $this->getClientId();
     }

@@ -8,21 +8,26 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 
 class ApiUserTokenCheckedEvent extends Event
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public const NAME = 'wds.api_auth_bundle.api_user_token_checked';
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $valid = true;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $token;
 
-    /** @var ApiUserInterface */
+    /**
+     * @var ApiUserInterface
+     */
     private $apiUser;
 
-    /**
-     * ApiUserTokenCheckedEvent constructor.
-     */
     public function __construct(string $token, ApiUserInterface $apiUser)
     {
         $this->token = $token;
@@ -39,13 +44,9 @@ class ApiUserTokenCheckedEvent extends Event
         return $this->apiUser;
     }
 
-    /**
-     * @return ApiUserTokenCheckedEvent
-     */
-    public function setValid(bool $valid): self
+    public function setValid(bool $valid): void
     {
         $this->valid = $valid;
-        return $this;
     }
 
     public function isValid(): bool

@@ -7,19 +7,34 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 class ApiUserCredentials
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const BASIC_PREFIX = 'Basic ';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     private const BASIC_DELIMITER = ':';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     private const EXCEPTION_INVALID_AUTH_TYPE = 'Only Basic Authorization is supported!';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     private const EXCEPTION_INVALID_AUTH_CREDENTIALS = 'Login and password are expected as credentials!';
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $login;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $password;
 
     /**

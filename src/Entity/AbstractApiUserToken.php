@@ -5,19 +5,24 @@ namespace WernerDweight\ApiAuthBundle\Entity;
 
 abstract class AbstractApiUserToken implements ApiUserTokenInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $token;
 
-    /** @var \DateTime */
+    /**
+     * @var \DateTime
+     */
     protected $expirationDate;
 
-    /** @var ApiUserInterface */
+    /**
+     * @var ApiUserInterface
+     */
     protected $apiUser;
 
-    public function setToken(string $token): ApiUserTokenInterface
+    public function setToken(string $token): void
     {
         $this->token = $token;
-        return $this;
     }
 
     public function getToken(): string
@@ -25,10 +30,9 @@ abstract class AbstractApiUserToken implements ApiUserTokenInterface
         return $this->token;
     }
 
-    public function setExpirationDate(\DateTime $expirationDate): ApiUserTokenInterface
+    public function setExpirationDate(\DateTime $expirationDate): void
     {
         $this->expirationDate = $expirationDate;
-        return $this;
     }
 
     public function getExpirationDate(): \DateTime
@@ -36,10 +40,9 @@ abstract class AbstractApiUserToken implements ApiUserTokenInterface
         return $this->expirationDate;
     }
 
-    public function setApiUser(ApiUserInterface $apiUser): ApiUserTokenInterface
+    public function setApiUser(ApiUserInterface $apiUser): void
     {
         $this->apiUser = $apiUser;
-        return $this;
     }
 
     public function getApiUser(): ApiUserInterface
@@ -54,7 +57,8 @@ abstract class AbstractApiUserToken implements ApiUserTokenInterface
     {
         return [
             'token' => $this->getToken(),
-            'expirationDate' => $this->getExpirationDate()->format('c'),
+            'expirationDate' => $this->getExpirationDate()
+                ->format('c'),
         ];
     }
 }

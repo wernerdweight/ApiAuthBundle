@@ -8,15 +8,16 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 
 class ApiUserAuthenticatedEvent extends Event
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     public const NAME = 'wds.api_auth_bundle.api_user_authenticated';
 
-    /** @var ApiUserInterface */
+    /**
+     * @var ApiUserInterface
+     */
     private $apiUser;
 
-    /**
-     * ApiUserAuthenticatedEvent constructor.
-     */
     public function __construct(ApiUserInterface $apiUser)
     {
         $this->apiUser = $apiUser;

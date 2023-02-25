@@ -7,40 +7,64 @@ use WernerDweight\RA\RA;
 
 class ConfigurationProvider
 {
-    /** @var class-string */
+    /**
+     * @var class-string
+     */
     private $clientClass;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $clientProperty;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $clientUseScopeAccessModel;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $clientAccessScopeChecker;
 
-    /** @var class-string|null */
+    /**
+     * @var class-string|null
+     */
     private $userClass;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $userToken;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $userLoginProperty;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $userApiTokenExpirationInterval;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $userUseScopeAccessModel;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $userAccessScopeChecker;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $excludeOptionsRequests;
 
-    /** @var RA */
+    /**
+     * @var RA
+     */
     private $targetControllers;
 
     /**

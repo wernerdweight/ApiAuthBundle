@@ -11,29 +11,41 @@ use WernerDweight\ApiAuthBundle\Service\TargetControllerResolver;
 
 class ApiClientAuthenticatorRequestResolver
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const CONTROLLER_KEY = '_controller';
-    /** @var string */
-    private const NO_AUTH = '';
-
-    /** @var string|null */
-    private $apiUserToken;
-
-    /** @var string */
-    private $route;
-
-    /** @var TargetControllerResolver */
-    private $targetControllerResolver;
-
-    /** @var ConfigurationProvider */
-    private $configurationProvider;
-
-    /** @var ApiClientCredentialsFactory */
-    private $apiClientCredentialsFactory;
 
     /**
-     * ApiClientAuthenticatorRequestResolver constructor.
+     * @var string
      */
+    private const NO_AUTH = '';
+
+    /**
+     * @var string|null
+     */
+    private $apiUserToken;
+
+    /**
+     * @var string
+     */
+    private $route;
+
+    /**
+     * @var TargetControllerResolver
+     */
+    private $targetControllerResolver;
+
+    /**
+     * @var ConfigurationProvider
+     */
+    private $configurationProvider;
+
+    /**
+     * @var ApiClientCredentialsFactory
+     */
+    private $apiClientCredentialsFactory;
+
     public function __construct(
         TargetControllerResolver $targetControllerResolver,
         ConfigurationProvider $configurationProvider,
@@ -46,7 +58,7 @@ class ApiClientAuthenticatorRequestResolver
 
     public function supports(Request $request): bool
     {
-        // check target controllers
+        /** @var string $controller */
         $controller = $request->attributes->get(self::CONTROLLER_KEY);
         if (true !== $this->targetControllerResolver->isTargeted($controller)) {
             return false;
@@ -62,7 +74,9 @@ class ApiClientAuthenticatorRequestResolver
 
     public function getCredentials(Request $request): ApiClientCredentials
     {
+        /** @var string $route */
         $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        /** @var string|null $routeOverride */
         $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
         if (null !== $routeOverride) {
             $route = $routeOverride;

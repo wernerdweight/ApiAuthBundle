@@ -9,29 +9,24 @@ use WernerDweight\RA\RA;
 
 class TargetControllerResolver
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const ANY_CONTROLLER = '*';
 
-    /** @var ConfigurationProvider */
+    /**
+     * @var ConfigurationProvider
+     */
     private $configurationProvider;
 
-    /** @var RA|null */
+    /**
+     * @var RA|null
+     */
     private $configuration;
 
-    /**
-     * TargetControllerResolver constructor.
-     */
     public function __construct(ConfigurationProvider $configurationProvider)
     {
         $this->configurationProvider = $configurationProvider;
-    }
-
-    private function getConfiguration(): RA
-    {
-        if (null === $this->configuration) {
-            $this->configuration = $this->configurationProvider->getTargetControllers();
-        }
-        return $this->configuration;
     }
 
     public function isTargeted(string $controllerPath): bool
@@ -52,6 +47,7 @@ class TargetControllerResolver
 
             $configuration->rewind();
             while (true === $configuration->valid()) {
+                /** @var class-string $targetedClass */
                 $targetedClass = $configuration->current();
                 if ($controller->getName() === $targetedClass ||
                     $controller->implementsInterface($targetedClass) ||
@@ -64,5 +60,13 @@ class TargetControllerResolver
         }
 
         return false;
+    }
+
+    private function getConfiguration(): RA
+    {
+        if (null === $this->configuration) {
+            $this->configuration = $this->configurationProvider->getTargetControllers();
+        }
+        return $this->configuration;
     }
 }

@@ -12,7 +12,9 @@ use WernerDweight\RA\RA;
 
 class AccessScopeCheckerFactory
 {
-    /** @var RA */
+    /**
+     * @var RA
+     */
     private $scopeCheckers;
 
     /**
@@ -28,7 +30,8 @@ class AccessScopeCheckerFactory
         while ($iterator->valid()) {
             /** @var AccessScopeCheckerInterface $scopeChecker */
             $scopeChecker = $iterator->current();
-            $this->scopeCheckers->set(get_class($scopeChecker), $scopeChecker);
+            $checkerClass = get_class($scopeChecker);
+            $this->scopeCheckers->set($checkerClass, $scopeChecker);
             $iterator->next();
         }
     }
@@ -43,9 +46,10 @@ class AccessScopeCheckerFactory
             throw new AccessScopeCheckerFactoryException(
                 AccessScopeCheckerFactoryException::EXCEPTION_UNKNOWN_CHECKER,
                 [
-                $checkerClass,
-            
-            ]);
+                    $checkerClass,
+
+                ]
+            );
         }
         /** @var AccessScopeCheckerInterface $scopeChecker */
         $scopeChecker = $this->scopeCheckers->get($checkerClass);

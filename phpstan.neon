@@ -3,6 +3,38 @@ includes:
     - vendor/wernerdweight/cs/src/Rules/phpstan-rules.neon
 
 parameters:
+    checkGenericClassInNonGenericObjectType: false
     ignoreErrors:
         # Symfony configuration builder's return types are a bit messy
         - '#Cannot call method scalarNode\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null.#'
+        - '#Interface must be located in "Contract" or "Contracts" namespace#'
+        -
+            message: '#Do not use chained method calls. Put each on separated lines#'
+            path: 'src/DependencyInjection/Configuration.php'
+        -
+            message: '#Anonymous variable in a#'
+            path: 'src/DependencyInjection/Configuration.php'
+        -
+            message: '#Instead of abstract class, use specific service with composition#'
+            paths:
+                - 'src/Entity/*'
+                - 'src/Repository/*'
+        -
+            message: '#Instead of protected element in use private element or contract method#'
+            path: 'src/Entity/*'
+        -
+            message: '#Method "[^"]+" returns bool type, so the name should start with is/has/was...#'
+            paths:
+                - 'src/Service/ConfigurationProvider.php'
+                - 'src/Security/ApiUserTokenChecker.php'
+                - 'src/Entity/AbstractApiUser.php'
+                - 'src/Security/ApiClientCredentialsChecker.php'
+        -
+            message: '#Method call return value that should be used, but is not#'
+            paths:
+                - 'src/Service/ApiUserAuthenticator.php'
+                - 'src/Service/AccessScopeChecker/AccessScopeCheckerFactory.php'
+                - 'src/Entity/AbstractApiUser.php'
+        -
+            message: '#\$this as argument is not allowed. Refactor method to service composition#'
+            path: 'src/Entity/AbstractApiUser.php'

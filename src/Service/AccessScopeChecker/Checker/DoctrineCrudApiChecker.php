@@ -11,23 +11,45 @@ use WernerDweight\ApiAuthBundle\Exception\DoctrineCrudApiCheckerException;
 
 final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const ENTITY_NAME_KEY = 'entityName';
-    /** @var string */
-    private const DOCTRINE_CRUD_API_ROUTE_PREFIX = 'wds_doctrine_crud_api_';
-
-    /** @var Request */
-    private $request;
-
-    /** @var RequestStack */
-    private $requestStack;
 
     /**
-     * RouteChecker constructor.
+     * @var string
      */
+    private const DOCTRINE_CRUD_API_ROUTE_PREFIX = 'wds_doctrine_crud_api_';
+
+    private ?Request $request = null;
+
+    private RequestStack $requestStack;
+
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
+    }
+
+    /**
+     * @throws \WernerDweight\RA\Exception\RAException
+     */
+    public function check(AccessScope $scope): string
+    {
+        $request = $this->getRequest();
+        /** @var string $route */
+        $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        /** @var string|null $routeOverride */
+        $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
+        if (null !== $routeOverride) {
+            $route = $routeOverride;
+        }
+        if (false === strpos($route, self::DOCTRINE_CRUD_API_ROUTE_PREFIX)) {
+            return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
+        }
+
+        $action = \Safe\substr($route, strlen(self::DOCTRINE_CRUD_API_ROUTE_PREFIX));
+        $entityName = $request->attributes->get(self::ENTITY_NAME_KEY);
+        return $scope->isAccessible(\Safe\sprintf('%s.%s', $entityName, $action));
     }
 
     private function getRequest(): Request
@@ -40,25 +62,5 @@ final class DoctrineCrudApiChecker implements AccessScopeCheckerInterface
             $this->request = $request;
         }
         return $this->request;
-    }
-
-    /**
-     * @throws \WernerDweight\RA\Exception\RAException
-     */
-    public function check(AccessScope $scope): string
-    {
-        $request = $this->getRequest();
-        $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
-        $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
-        if (null !== $routeOverride) {
-            $route = $routeOverride;
-        }
-        if (false === strpos($route, self::DOCTRINE_CRUD_API_ROUTE_PREFIX)) {
-            return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
-        }
-
-        $action = \Safe\substr($route, strlen(self::DOCTRINE_CRUD_API_ROUTE_PREFIX));
-        $entityName = $request->attributes->get(self::ENTITY_NAME_KEY);
-        return $scope->isAccessible(\Safe\sprintf('%s.%s', $entityName, $action));
     }
 }

@@ -7,10 +7,14 @@ use WernerDweight\EnhancedException\Exception\AbstractEnhancedException;
 
 class ApiUserAuthenticatorException extends AbstractEnhancedException
 {
-    /** @var int */
+    /**
+     * @var int
+     */
     public const EXCEPTION_NO_TOKEN_CLASS = 1;
 
-    /** @var string[] */
+    /**
+     * @var string[]
+     */
     protected static $messages = [
         self::EXCEPTION_NO_TOKEN_CLASS => 'Token class not configured! You must configure token class if you want to use on-behalf access mode.',
     ];

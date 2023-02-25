@@ -8,10 +8,14 @@ use WernerDweight\RA\RA;
 
 final class AccessScope implements \JsonSerializable
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const PATH_SEPARATOR = '.';
 
-    /** @var RA */
+    /**
+     * @var RA
+     */
     private $scope;
 
     /**
@@ -34,9 +38,10 @@ final class AccessScope implements \JsonSerializable
         $pathSegments = new RA(explode(self::PATH_SEPARATOR, $key));
         $pathSegments->rewind();
         while (true === $pathSegments->valid()) {
-            if (!$currentScope instanceof RA) {
+            if (! $currentScope instanceof RA) {
                 return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;
             }
+            /** @var string $key */
             $key = $pathSegments->current();
             if (true !== $currentScope->hasKey($key)) {
                 return ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN;

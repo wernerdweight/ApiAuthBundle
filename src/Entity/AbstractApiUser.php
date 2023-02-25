@@ -10,18 +10,21 @@ use WernerDweight\ApiAuthBundle\DTO\AccessScope;
 
 abstract class AbstractApiUser implements ApiUserInterface
 {
-    /** @var mixed[] */
+    /**
+     * @var mixed[]
+     */
     protected $userScope = [];
 
-    /** @var ApiUserTokenInterface|null */
+    /**
+     * @var ApiUserTokenInterface|null
+     */
     protected $currentToken;
 
-    /** @var ArrayCollection<int, ApiUserTokenInterface>|PersistentCollection<int, ApiUserTokenInterface> */
+    /**
+     * @var ArrayCollection<int, ApiUserTokenInterface>|PersistentCollection<int, ApiUserTokenInterface>
+     */
     protected $apiTokens;
 
-    /**
-     * AbstractApiUser constructor.
-     */
     public function __construct()
     {
         $this->apiTokens = new ArrayCollection();
@@ -30,10 +33,9 @@ abstract class AbstractApiUser implements ApiUserInterface
     /**
      * @param mixed[] $userScope
      */
-    public function setUserScope(array $userScope): ApiUserInterface
+    public function setUserScope(array $userScope): void
     {
         $this->userScope = $userScope;
-        return $this;
     }
 
     public function getUserScope(): AccessScope
@@ -41,12 +43,11 @@ abstract class AbstractApiUser implements ApiUserInterface
         return new AccessScope($this->userScope);
     }
 
-    public function addApiToken(ApiUserTokenInterface $apiToken): ApiUserInterface
+    public function addApiToken(ApiUserTokenInterface $apiToken): void
     {
         $this->apiTokens->add($apiToken);
         $apiToken->setApiUser($this);
         $this->currentToken = $apiToken;
-        return $this;
     }
 
     public function removeApiToken(ApiUserTokenInterface $apiUserToken): bool

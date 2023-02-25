@@ -15,21 +15,34 @@ use WernerDweight\ApiAuthBundle\Security\ApiUserLoader;
 
 class ApiUserAuthenticator
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private const AUTH_HEADER = 'Authorization';
-    /** @var string */
+
+    /**
+     * @var string
+     */
     private const EXCEPTION_NO_AUTH = 'No Authorization header is present in request!';
 
-    /** @var ApiUserLoader */
+    /**
+     * @var ApiUserLoader
+     */
     private $apiUserLoader;
 
-    /** @var EventDispatcher */
+    /**
+     * @var EventDispatcher
+     */
     private $eventDispatcher;
 
-    /** @var EntityManagerInterface */
+    /**
+     * @var EntityManagerInterface
+     */
     private $entityManager;
 
-    /** @var ApiUserTokenFactory */
+    /**
+     * @var ApiUserTokenFactory
+     */
     private $apiUserTokenFactory;
 
     /**

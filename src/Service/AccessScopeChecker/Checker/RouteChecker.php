@@ -11,18 +11,29 @@ use WernerDweight\ApiAuthBundle\Exception\RouteCheckerException;
 
 final class RouteChecker implements AccessScopeCheckerInterface
 {
-    /** @var Request */
-    private $request;
+    private ?Request $request = null;
 
-    /** @var RequestStack */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /**
-     * RouteChecker constructor.
-     */
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
+    }
+
+    /**
+     * @throws \WernerDweight\RA\Exception\RAException
+     */
+    public function check(AccessScope $scope): string
+    {
+        $request = $this->getRequest();
+        /** @var string $route */
+        $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
+        /** @var string|null $routeOverride */
+        $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
+        if (null !== $routeOverride) {
+            $route = $routeOverride;
+        }
+        return $scope->isAccessible($route);
     }
 
     private function getRequest(): Request
@@ -35,20 +46,5 @@ final class RouteChecker implements AccessScopeCheckerInterface
             $this->request = $request;
         }
         return $this->request;
-    }
-
-    /**
-     * @throws \WernerDweight\RA\Exception\RAException
-     */
-    public function check(AccessScope $scope): string
-    {
-        $request = $this->getRequest();
-        $route = $request->attributes->get(ApiAuthEnum::ROUTE_KEY);
-        $routeOverride = $request->attributes->get(ApiAuthEnum::ROUTE_OVERRIDE_KEY);
-        if (null !== $routeOverride) {
-            $route = $routeOverride;
-        }
-        $this->route = $route;
-        return $scope->isAccessible($route);
     }
 }

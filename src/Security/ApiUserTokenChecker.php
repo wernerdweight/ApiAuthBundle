@@ -11,24 +11,31 @@ use WernerDweight\ApiAuthBundle\Service\Event\ApiAuthEventDispatcher;
 
 class ApiUserTokenChecker
 {
-    /** @var ApiAuthEventDispatcher */
+    /**
+     * @var ApiAuthEventDispatcher
+     */
     private $eventDispatcher;
 
-    /** @var ConfigurationProvider */
+    /**
+     * @var ConfigurationProvider
+     */
     private $configurationProvider;
 
-    /** @var AccessScopeCheckerFactory */
+    /**
+     * @var AccessScopeCheckerFactory
+     */
     private $accessScopeCheckerFactory;
 
-    /** @var ApiUserProvider */
+    /**
+     * @var ApiUserProvider
+     */
     private $apiUserProvider;
 
-    /** @var ApiUserInterface|null */
+    /**
+     * @var ApiUserInterface|null
+     */
     private $apiUser;
 
-    /**
-     * ApiClientAuthenticator constructor.
-     */
     public function __construct(
         ApiAuthEventDispatcher $eventDispatcher,
         ConfigurationProvider $configurationProvider,
@@ -57,9 +64,10 @@ class ApiUserTokenChecker
 
         // check api user scope
         if (true === $this->configurationProvider->getUserUseScopeAccessModel()) {
-            $scopeAccessibility = $this->accessScopeCheckerFactory
-                ->get($this->configurationProvider->getUserAccessScopeChecker())
-                ->check($apiUser->getUserScope());
+            $accessScopeChecker = $this->accessScopeCheckerFactory->get(
+                $this->configurationProvider->getUserAccessScopeChecker()
+            );
+            $scopeAccessibility = $accessScopeChecker->check($apiUser->getUserScope());
             if (ApiAuthEnum::SCOPE_ACCESSIBILITY_FORBIDDEN === $scopeAccessibility) {
                 return false;
             }

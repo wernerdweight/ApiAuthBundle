@@ -3,7 +3,7 @@ ApiAuthBundle
 
 Symfony bundle providing API authentication and authorization.
 
-[![Build Status](https://travis-ci.org/wernerdweight/ApiAuthBundle.svg?branch=master)](https://travis-ci.org/wernerdweight/ApiAuthBundle)
+[![Build Status](https://app.travis-ci.com/wernerdweight/ApiAuthBundle.svg?branch=master)](https://app.travis-ci.com/wernerdweight/ApiAuthBundle)
 [![Latest Stable Version](https://poser.pugx.org/wernerdweight/api-auth-bundle/v/stable)](https://packagist.org/packages/wernerdweight/api-auth-bundle)
 [![Total Downloads](https://poser.pugx.org/wernerdweight/api-auth-bundle/downloads)](https://packagist.org/packages/wernerdweight/api-auth-bundle)
 [![License](https://poser.pugx.org/wernerdweight/api-auth-bundle/license)](https://packagist.org/packages/wernerdweight/api-auth-bundle)
@@ -99,7 +99,7 @@ security:
             id: WernerDweight\ApiAuthBundle\Security\ApiClientProvider
             
     # ...
-    encoders:
+    password_hashers:
         App\Entity\User:    # your user entity
             algorithm: # ...
     
@@ -108,12 +108,8 @@ security:
         # ...
         main:
             # ...
-            guard:
-                authenticators:
-                    - WernerDweight\ApiAuthBundle\Security\ApiClientAuthenticator
-
-            # you should probably entirely disable anonymous access to the api
-            # anonymous: false
+            custom_authenticators:
+                - WernerDweight\ApiAuthBundle\Security\ApiClientAuthenticator
             
             # if you want, disable storing the client in the session
             # you MUST set stateless to `true` if you want to use `on behalf` access mode (see below)

@@ -12,12 +12,11 @@ use WernerDweight\ApiAuthBundle\Event\ApiUserTokenCheckedEvent;
 
 class ApiAuthEventDispatcher
 {
-    /** @var EventDispatcherInterface */
+    /**
+     * @var EventDispatcherInterface
+     */
     private $eventDispatcher;
 
-    /**
-     * ApiAuthEventDispatcher constructor.
-     */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;

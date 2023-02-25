@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace WernerDweight\ApiAuthBundle\Security;
 
+use Safe\Exceptions\StringsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use WernerDweight\ApiAuthBundle\Entity\ApiClientInterface;
@@ -10,31 +11,22 @@ use WernerDweight\RA\RA;
 
 final class ApiClientProvider implements UserProviderInterface
 {
-    /** @var ApiClientLoader */
+    /**
+     * @var ApiClientLoader
+     */
     private $apiClientLoader;
 
-    /** @var ApiClientRefresher */
+    /**
+     * @var ApiClientRefresher
+     */
     private $apiClientRefresher;
 
-    /**
-     * ApiUserProvider constructor.
-     */
     public function __construct(
         ApiClientLoader $apiClientLoader,
         ApiClientRefresher $apiClientRefresher
     ) {
         $this->apiClientLoader = $apiClientLoader;
         $this->apiClientRefresher = $apiClientRefresher;
-    }
-
-    /**
-     * @param string $username
-     *
-     * @throws \Safe\Exceptions\StringsException
-     */
-    public function loadUserByUsername($username): ApiClientInterface
-    {
-        return $this->apiClientLoader->load($username);
     }
 
     /**
@@ -46,13 +38,19 @@ final class ApiClientProvider implements UserProviderInterface
     }
 
     /**
-     * @param string $class
-     *
      * @throws \Safe\Exceptions\SplException
      */
-    public function supportsClass($class): bool
+    public function supportsClass(string $class): bool
     {
         $implementedInterfaces = new RA(\Safe\class_implements($class));
         return $implementedInterfaces->contains(ApiClientInterface::class);
+    }
+
+    /**
+     * @throws StringsException
+     */
+    public function loadUserByIdentifier(string $identifier): ApiClientInterface
+    {
+        return $this->apiClientLoader->load($identifier);
     }
 }
