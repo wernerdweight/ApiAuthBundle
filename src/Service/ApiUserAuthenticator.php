@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace WernerDweight\ApiAuthBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Safe\DateTime;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -13,6 +14,9 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 use WernerDweight\ApiAuthBundle\Event\ApiUserAuthenticatedEvent;
 use WernerDweight\ApiAuthBundle\Security\ApiUserLoader;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ApiUserAuthenticator
 {
     /**
@@ -75,14 +79,18 @@ class ApiUserAuthenticator
         }
         $credentials = new ApiUserCredentials($auth);
         $user = $this->apiUserLoader->loadByCredentials($credentials);
+        $previousLoginAt = $user->getLastLoginAt();
 
         $token = $this->apiUserTokenFactory->create($user);
         $user->addApiToken($token);
+        $user->setLastLoginAt(new DateTime());
 
         $this->eventDispatcher->dispatch(new ApiUserAuthenticatedEvent($user));
 
         $this->entityManager->persist($token);
         $this->entityManager->flush();
+
+        $user->setLastLoginAt($previousLoginAt);
         return $user;
     }
 }

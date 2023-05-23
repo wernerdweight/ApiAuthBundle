@@ -16,6 +16,11 @@ abstract class AbstractApiUser implements ApiUserInterface
     protected $userScope = [];
 
     /**
+     * @var \DateTime|null
+     */
+    protected $lastLoginAt;
+
+    /**
      * @var ApiUserTokenInterface|null
      */
     protected $currentToken;
@@ -41,6 +46,16 @@ abstract class AbstractApiUser implements ApiUserInterface
     public function getUserScope(): AccessScope
     {
         return new AccessScope($this->userScope);
+    }
+
+    public function setLastLoginAt(?\DateTime $lastLoginAt): void
+    {
+        $this->lastLoginAt = $lastLoginAt;
+    }
+
+    public function getLastLoginAt(): ?\DateTime
+    {
+        return $this->lastLoginAt;
     }
 
     public function addApiToken(ApiUserTokenInterface $apiToken): void
@@ -76,6 +91,7 @@ abstract class AbstractApiUser implements ApiUserInterface
         return [
             'token' => $this->getCurrentToken(),
             'userScope' => $this->getUserScope(),
+            'lastLoginAt' => $this->getLastLoginAt()?->format(\DateTime::ATOM),
         ];
     }
 }

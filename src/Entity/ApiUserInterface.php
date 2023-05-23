@@ -14,4 +14,8 @@ interface ApiUserInterface extends \JsonSerializable, UserInterface, PasswordAut
     public function getCurrentToken(): ?ApiUserTokenInterface;
 
     public function getUserScope(): AccessScope;
+
+    public function getLastLoginAt(): ?\DateTime;
+
+    public function setLastLoginAt(?\DateTime $lastLoginAt): void;
 }

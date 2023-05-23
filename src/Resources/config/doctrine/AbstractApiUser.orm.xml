@@ -13,5 +13,7 @@
                 <option name="jsonb">true</option>
             </options>
         </field>
+
+        <field name="lastLoginAt" type="datetime" nullable="true" />
     </mapped-superclass>
 </doctrine-mapping>
