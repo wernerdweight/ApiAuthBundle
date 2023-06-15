@@ -29,4 +29,19 @@ abstract class AbstractApiUserRepository extends ServiceEntityRepository impleme
             ->getOneOrNullResult();
         return $apiUser;
     }
+
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneByLoginProperty(string $loginProperty, string $value): ?ApiUserInterface
+    {
+        $condition = sprintf('lower(this.%s) = lower(:value)', $loginProperty);
+        /** @var ApiUserInterface|null $apiUser */
+        $apiUser = $this->createQueryBuilder('this')
+            ->where($condition)
+            ->setParameter('value', $value)
+            ->getQuery()
+            ->getOneOrNullResult();
+        return $apiUser;
+    }
 }

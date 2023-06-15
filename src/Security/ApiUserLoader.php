@@ -79,18 +79,12 @@ class ApiUserLoader
         return $apiUser;
     }
 
-    /**
-     * @throws \Safe\Exceptions\StringsException
-     */
     public function loadByCredentials(ApiUserCredentials $credentials): ApiUserInterface
     {
         $loginProperty = $this->configurationProvider->getUserLoginProperty();
         $userRepository = $this->getRepository();
         /** @var (ApiUserInterface & UserInterface)|null $user */
-        $user = $userRepository
-            ->findOneBy([
-                $loginProperty => $credentials->getLogin(),
-            ]);
+        $user = $userRepository->findOneByLoginProperty($loginProperty, $credentials->getLogin());
 
         if (null === $user || true !== $this->passwordEncoder->isPasswordValid($user, $credentials->getPassword())) {
             throw new UnauthorizedHttpException(ApiAuthEnum::REALM, self::EXCEPTION_NO_SUCH_CREDENTIALS);

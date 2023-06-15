@@ -12,4 +12,6 @@ use WernerDweight\ApiAuthBundle\Entity\ApiUserInterface;
 interface ApiUserRepositoryInterface extends ObjectRepository
 {
     public function findOneByToken(string $token): ?ApiUserInterface;
+
+    public function findOneByLoginProperty(string $loginProperty, string $value): ?ApiUserInterface;
 }
